@@ -1,0 +1,18 @@
+services:
+  flutter:
+    build:
+      context: ./docker/flutter
+      args:
+        FLUTTER_VERSION: "3.47.1"
+    working_dir: /workspace/app
+    volumes:
+      - ./:/workspace
+      - pub-cache:/home/dev/.pub-cache
+    ports:
+      - "8080:8080"
+    command: flutter run -d web-server --web-hostname 0.0.0.0 --web-port 8080
+    stdin_open: true
+    tty: true
+
+volumes:
+  pub-cache:
