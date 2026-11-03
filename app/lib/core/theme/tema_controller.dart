@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../preferences/preferencias.dart';
 
 /// Tema escolhido pelo usuário: claro, escuro ou o do sistema.
-final temaProvider = NotifierProvider<TemaController, ThemeMode>(TemaController.new);
+final temaProvider = NotifierProvider<TemaController, ThemeMode>(
+  TemaController.new,
+);
 
 class TemaController extends Notifier<ThemeMode> {
   static const _chave = 'tema';

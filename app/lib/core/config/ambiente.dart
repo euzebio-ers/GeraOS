@@ -1,9 +1,14 @@
 /// Configuração recebida na hora de rodar o app via
 /// `--dart-define-from-file=env/<ambiente>.json`.
 abstract final class Ambiente {
-  static const nome = String.fromEnvironment('AMBIENTE', defaultValue: 'desconhecido');
+  static const nome = String.fromEnvironment(
+    'AMBIENTE',
+    defaultValue: 'desconhecido',
+  );
   static const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const supabasePublishableKey = String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+  static const supabasePublishableKey = String.fromEnvironment(
+    'SUPABASE_PUBLISHABLE_KEY',
+  );
 
   static bool get ehProducao => nome == 'producao';
 

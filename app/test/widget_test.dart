@@ -61,7 +61,10 @@ void main() {
   });
 
   testWidgets('Tema escolhido é salvo no aparelho', (tester) async {
-    final preferencias = await montarApp(tester, EstadoAutenticacaoFalso(logado: true));
+    final preferencias = await montarApp(
+      tester,
+      EstadoAutenticacaoFalso(logado: true),
+    );
 
     await tester.tap(find.byTooltip('Configurações'));
     await tester.pumpAndSettle();

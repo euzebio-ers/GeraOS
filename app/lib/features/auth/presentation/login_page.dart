@@ -36,7 +36,9 @@ class LoginPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   FilledButton(
                     onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('O login será implementado na Etapa 6.')),
+                      const SnackBar(
+                        content: Text('O login será implementado na Etapa 6.'),
+                      ),
                     ),
                     child: const Text('Entrar'),
                   ),
