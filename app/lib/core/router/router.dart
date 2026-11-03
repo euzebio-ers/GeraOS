@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/data/estado_autenticacao.dart';
 import '../../features/auth/presentation/cadastro_page.dart';
 import '../../features/auth/presentation/login_page.dart';
+import '../../features/auth/presentation/nova_senha_page.dart';
 import '../../features/auth/presentation/recuperar_senha_page.dart';
 import '../../features/configuracoes/presentation/configuracoes_page.dart';
 import '../../features/ordens_servico/presentation/lista_os_page.dart';
@@ -27,7 +28,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       // 1. Sem login: só as telas públicas.
       if (!auth.logado) return telaPublica ? null : Rotas.login;
 
-      // 2. Logado, mas a empresa ainda não está pronta.
+      // 2. Veio pelo link de nova senha: primeiro troca a senha.
+      if (auth.recuperandoSenha) {
+        return local == Rotas.novaSenha ? null : Rotas.novaSenha;
+      }
+      if (local == Rotas.novaSenha) return null;
+
+      // 3. Logado, mas a empresa ainda não está pronta.
       final destino = switch (organizacao.situacao) {
         SituacaoOrganizacao.carregando ||
         SituacaoOrganizacao.erro => Rotas.preparando,
@@ -36,11 +43,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       };
       if (destino != null) return local == destino ? null : destino;
 
-      // 3. Tudo pronto: não faz sentido ficar nas telas de entrada.
+      // 4. Tudo pronto: não faz sentido ficar nas telas de entrada.
       final telaDeEntrada = telaPublica || Rotas.entrada.contains(local);
       return telaDeEntrada ? Rotas.ordensServico : null;
     },
     routes: [
+      GoRoute(
+        path: Rotas.raiz,
+        redirect: (context, state) => Rotas.ordensServico,
+      ),
       GoRoute(
         path: Rotas.login,
         builder: (context, state) => const LoginPage(),
@@ -52,6 +63,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Rotas.recuperarSenha,
         builder: (context, state) => const RecuperarSenhaPage(),
+      ),
+      GoRoute(
+        path: Rotas.novaSenha,
+        builder: (context, state) => const NovaSenhaPage(),
       ),
       GoRoute(
         path: Rotas.preparando,

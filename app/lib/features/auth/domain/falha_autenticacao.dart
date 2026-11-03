@@ -29,6 +29,10 @@ class FalhaAutenticacao implements Exception {
       'weak_password' => const FalhaAutenticacao(
         'Senha fraca. Use pelo menos 8 caracteres, com letras e números.',
       ),
+      'same_password' => const FalhaAutenticacao(
+        'A nova senha precisa ser diferente da anterior.',
+      ),
+
       'over_request_rate_limit' ||
       'over_email_send_rate_limit' => const FalhaAutenticacao(
         'Muitas tentativas. Aguarde alguns minutos e tente novamente.',

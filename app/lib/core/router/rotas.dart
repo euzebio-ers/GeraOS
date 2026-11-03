@@ -1,8 +1,10 @@
 /// Endereços das telas do app.
 abstract final class Rotas {
+  static const raiz = '/';
   static const login = '/login';
   static const cadastro = '/cadastro';
   static const recuperarSenha = '/recuperar-senha';
+  static const novaSenha = '/nova-senha';
   static const preparando = '/preparando';
   static const configurarOrganizacao = '/empresa/nova';
   static const ordensServico = '/os';

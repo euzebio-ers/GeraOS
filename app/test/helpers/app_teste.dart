@@ -13,16 +13,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Versão falsa do estado de login, controlada pelo próprio teste.
 class EstadoAutenticacaoFalso extends EstadoAutenticacao {
-  EstadoAutenticacaoFalso({required this.logado});
+  EstadoAutenticacaoFalso({
+    required this.logado,
+    this.recuperandoSenha = false,
+  });
 
   @override
   bool logado;
+
+  @override
+  bool recuperandoSenha;
 
   @override
   String? get usuarioId => logado ? 'usuario-teste' : null;
 
   void alterarLogin(bool valor) {
     logado = valor;
+    notifyListeners();
+  }
+
+  @override
+  void concluirRecuperacao() {
+    recuperandoSenha = false;
     notifyListeners();
   }
 }
@@ -69,6 +81,7 @@ class AuthRepositoryFalso implements AuthRepository {
   int recuperacoesEnviadas = 0;
   String? nomeCadastrado;
   String? organizacaoCadastrada;
+  String? novaSenhaDefinida;
 
   @override
   Future<void> entrar({required String email, required String senha}) async {
@@ -92,6 +105,11 @@ class AuthRepositoryFalso implements AuthRepository {
   @override
   Future<void> enviarRecuperacaoSenha(String email) async {
     recuperacoesEnviadas++;
+  }
+
+  @override
+  Future<void> definirNovaSenha(String senha) async {
+    novaSenhaDefinida = senha;
   }
 
   @override
