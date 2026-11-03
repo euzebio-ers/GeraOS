@@ -16,4 +16,28 @@ abstract final class Validadores {
     if (valor == null || valor.isEmpty) return 'Informe a senha.';
     return null;
   }
+
+  static final _letra = RegExp(r'[A-Za-zÀ-ÿ]');
+  static final _numero = RegExp(r'\d');
+
+  static String? nome(String? valor) {
+    final texto = valor?.trim() ?? '';
+    if (texto.length < 2) return 'Informe seu nome.';
+    if (texto.length > 120) return 'O nome deve ter no máximo 120 caracteres.';
+    return null;
+  }
+
+  static String? senhaCadastro(String? valor) {
+    final senha = valor ?? '';
+    if (senha.length < 8) return 'A senha deve ter pelo menos 8 caracteres.';
+    if (!_letra.hasMatch(senha) || !_numero.hasMatch(senha)) {
+      return 'Use letras e números na senha.';
+    }
+    return null;
+  }
+
+  /// Confere se a confirmação é igual à senha digitada no outro campo.
+  static String? Function(String?) confirmacaoSenha(String Function() senha) {
+    return (valor) => valor == senha() ? null : 'As senhas não conferem.';
+  }
 }

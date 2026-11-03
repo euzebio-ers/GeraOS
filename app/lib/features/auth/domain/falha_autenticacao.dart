@@ -6,7 +6,10 @@ class FalhaAutenticacao implements Exception {
 
   final String mensagem;
 
-  factory FalhaAutenticacao.de(AuthException erro) {
+  factory FalhaAutenticacao.de(
+    AuthException erro, {
+    String padrao = 'Não foi possível entrar. Tente novamente.',
+  }) {
     if (erro is AuthRetryableFetchException) {
       return const FalhaAutenticacao(
         'Sem conexão com o servidor. Verifique sua internet e tente novamente.',
@@ -20,11 +23,17 @@ class FalhaAutenticacao implements Exception {
       'email_not_confirmed' => const FalhaAutenticacao(
         'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.',
       ),
+      'user_already_exists' || 'email_exists' => const FalhaAutenticacao(
+        'Não foi possível usar este e-mail. Se você já tem conta, entre ou recupere sua senha.',
+      ),
+      'weak_password' => const FalhaAutenticacao(
+        'Senha fraca. Use pelo menos 8 caracteres, com letras e números.',
+      ),
       'over_request_rate_limit' ||
       'over_email_send_rate_limit' => const FalhaAutenticacao(
         'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
       ),
-      _ => const FalhaAutenticacao('Não foi possível entrar. Tente novamente.'),
+      _ => FalhaAutenticacao(padrao),
     };
   }
 

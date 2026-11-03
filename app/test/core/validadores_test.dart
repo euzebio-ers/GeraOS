@@ -25,4 +25,36 @@ void main() {
       expect(Validadores.senhaLogin('123'), isNull);
     });
   });
+
+  group('Validadores.senhaCadastro', () {
+    test('recusa senha curta', () {
+      expect(
+        Validadores.senhaCadastro('abc12'),
+        'A senha deve ter pelo menos 8 caracteres.',
+      );
+    });
+
+    test('recusa senha só com letras', () {
+      expect(
+        Validadores.senhaCadastro('abcdefgh'),
+        'Use letras e números na senha.',
+      );
+    });
+
+    test('aceita senha com letras acentuadas e números', () {
+      expect(Validadores.senhaCadastro('coração2026'), isNull);
+    });
+  });
+
+  group('Validadores.confirmacaoSenha', () {
+    test('recusa quando as senhas são diferentes', () {
+      final validar = Validadores.confirmacaoSenha(() => 'senha123');
+      expect(validar('senha124'), 'As senhas não conferem.');
+    });
+
+    test('aceita quando as senhas são iguais', () {
+      final validar = Validadores.confirmacaoSenha(() => 'senha123');
+      expect(validar('senha123'), isNull);
+    });
+  });
 }

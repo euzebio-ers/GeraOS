@@ -6,6 +6,7 @@ import 'package:geraos/features/auth/data/auth_repository.dart';
 import 'package:geraos/features/auth/data/estado_autenticacao.dart';
 import 'package:geraos/features/auth/domain/falha_autenticacao.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geraos/features/auth/domain/resultado_cadastro.dart';
 
 /// Versão falsa do estado de login, controlada pelo próprio teste.
 class EstadoAutenticacaoFalso extends EstadoAutenticacao {
@@ -21,19 +22,38 @@ class EstadoAutenticacaoFalso extends EstadoAutenticacao {
 }
 
 /// Versão falsa do repositório: não usa rede e registra as chamadas.
+/// Versão falsa do repositório: não usa rede e registra as chamadas.
 class AuthRepositoryFalso implements AuthRepository {
-  AuthRepositoryFalso({this.falha});
+  AuthRepositoryFalso({
+    this.falha,
+    this.resultadoCadastro = ResultadoCadastro.logado,
+  });
 
-  /// Se definida, `entrar` lança esta falha.
+  /// Se definida, `entrar` e `cadastrar` lançam esta falha.
   final FalhaAutenticacao? falha;
+
+  /// O que `cadastrar` deve devolver quando não há falha.
+  final ResultadoCadastro resultadoCadastro;
 
   int tentativasDeLogin = 0;
   int saidas = 0;
+  String? nomeCadastrado;
 
   @override
   Future<void> entrar({required String email, required String senha}) async {
     tentativasDeLogin++;
     if (falha != null) throw falha!;
+  }
+
+  @override
+  Future<ResultadoCadastro> cadastrar({
+    required String nome,
+    required String email,
+    required String senha,
+  }) async {
+    if (falha != null) throw falha!;
+    nomeCadastrado = nome;
+    return resultadoCadastro;
   }
 
   @override
