@@ -12,7 +12,7 @@ Future<void> main() async {
 
   await Supabase.initialize(
     url: Ambiente.supabaseUrl,
-    anonKey: Ambiente.supabaseAnonKey,
+    publishableKey: Ambiente.supabasePublishableKey,
   );
 
   runApp(const ProviderScope(child: GeraOsApp()));
