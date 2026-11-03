@@ -1,0 +1,3 @@
+-- Dados de exemplo para o ambiente LOCAL.
+-- Executado automaticamente após as migrations em `supabase db reset`.
+-- Nunca coloque dados reais de clientes aqui.
