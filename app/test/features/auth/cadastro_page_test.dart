@@ -13,7 +13,7 @@ Future<void> abrirCadastro(
     EstadoAutenticacaoFalso(logado: false),
     authRepository: repositorio,
   );
-  await tester.tap(find.text('Criar conta'));
+  await tester.tap(find.text('Criar conta da minha empresa'));
   await tester.pumpAndSettle();
 }
 
@@ -21,6 +21,10 @@ Future<void> preencher(
   WidgetTester tester, {
   String confirmacao = 'senha1234',
 }) async {
+  await tester.enterText(
+    find.widgetWithText(TextFormField, 'Nome da empresa'),
+    'TecFix Assistência',
+  );
   await tester.enterText(
     find.widgetWithText(TextFormField, 'Seu nome'),
     'Maria Souza',
@@ -65,6 +69,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repositorio.nomeCadastrado, 'Maria Souza');
+    expect(repositorio.organizacaoCadastrada, 'TecFix Assistência');
     expect(find.text('Confirme seu e-mail'), findsOneWidget);
   });
 }

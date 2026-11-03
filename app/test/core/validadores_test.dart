@@ -57,4 +57,10 @@ void main() {
       expect(validar('senha123'), isNull);
     });
   });
+
+  group('Validadores.nomeOrganizacao', () {
+    test('recusa nome vazio', () {
+      expect(Validadores.nomeOrganizacao(' '), 'Informe o nome da empresa.');
+    });
+  });
 }

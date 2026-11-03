@@ -63,4 +63,27 @@ void main() {
 
     expect(repositorio.saidas, 1);
   });
+
+  testWidgets('Recuperação de senha envia o e-mail e mostra o aviso', (
+    tester,
+  ) async {
+    final repositorio = AuthRepositoryFalso();
+    await montarApp(
+      tester,
+      EstadoAutenticacaoFalso(logado: false),
+      authRepository: repositorio,
+    );
+
+    await tester.tap(find.text('Esqueci minha senha'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'E-mail'),
+      'maria@teste.com',
+    );
+    await tester.tap(find.text('Enviar link'));
+    await tester.pumpAndSettle();
+
+    expect(repositorio.recuperacoesEnviadas, 1);
+    expect(find.textContaining('Se existir uma conta'), findsOneWidget);
+  });
 }

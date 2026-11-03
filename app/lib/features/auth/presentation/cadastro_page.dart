@@ -17,6 +17,7 @@ class CadastroPage extends ConsumerStatefulWidget {
 
 class _CadastroPageState extends ConsumerState<CadastroPage> {
   final _formKey = GlobalKey<FormState>();
+  final _nomeOrganizacao = TextEditingController();
   final _nome = TextEditingController();
   final _email = TextEditingController();
   final _senha = TextEditingController();
@@ -31,6 +32,7 @@ class _CadastroPageState extends ConsumerState<CadastroPage> {
 
   @override
   void dispose() {
+    _nomeOrganizacao.dispose();
     _nome.dispose();
     _email.dispose();
     _senha.dispose();
@@ -49,7 +51,12 @@ class _CadastroPageState extends ConsumerState<CadastroPage> {
     try {
       final resultado = await ref
           .read(authRepositoryProvider)
-          .cadastrar(nome: _nome.text, email: _email.text, senha: _senha.text);
+          .cadastrar(
+            nomeOrganizacao: _nomeOrganizacao.text,
+            nome: _nome.text,
+            email: _email.text,
+            senha: _senha.text,
+          );
       if (resultado == ResultadoCadastro.confirmarEmail && mounted) {
         setState(() => _emailEnviado = _email.text.trim());
       }
@@ -89,6 +96,19 @@ class _CadastroPageState extends ConsumerState<CadastroPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            TextFormField(
+              controller: _nomeOrganizacao,
+              decoration: const InputDecoration(
+                labelText: 'Nome da empresa',
+                hintText: 'Ex.: TecFix Assistência',
+              ),
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.organizationName],
+              validator: Validadores.nomeOrganizacao,
+              enabled: !_carregando,
+            ),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _nome,
               decoration: const InputDecoration(labelText: 'Seu nome'),

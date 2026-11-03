@@ -27,6 +27,15 @@ abstract final class Validadores {
     return null;
   }
 
+  static String? nomeOrganizacao(String? valor) {
+    final texto = valor?.trim() ?? '';
+    if (texto.length < 2) return 'Informe o nome da empresa.';
+    if (texto.length > 120) {
+      return 'O nome da empresa deve ter no máximo 120 caracteres.';
+    }
+    return null;
+  }
+
   static String? senhaCadastro(String? valor) {
     final senha = valor ?? '';
     if (senha.length < 8) return 'A senha deve ter pelo menos 8 caracteres.';

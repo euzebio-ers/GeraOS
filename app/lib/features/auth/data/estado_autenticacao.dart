@@ -6,9 +6,12 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_provider.dart';
 
-/// Informa se há um usuário logado e avisa sempre que isso mudar.
+/// Informa quem está logado e avisa sempre que isso mudar.
 abstract class EstadoAutenticacao extends ChangeNotifier {
-  bool get logado;
+  /// ID do usuário logado, ou `null` se ninguém estiver logado.
+  String? get usuarioId;
+
+  bool get logado => usuarioId != null;
 }
 
 /// Implementação real, baseada na sessão do Supabase Auth.
@@ -21,7 +24,7 @@ class EstadoAutenticacaoSupabase extends EstadoAutenticacao {
   late final StreamSubscription<AuthState> _assinatura;
 
   @override
-  bool get logado => _auth.currentSession != null;
+  String? get usuarioId => _auth.currentUser?.id;
 
   @override
   void dispose() {

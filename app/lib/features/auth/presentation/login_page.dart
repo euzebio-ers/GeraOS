@@ -106,6 +106,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         enabled: !_carregando,
                         onFieldSubmitted: (_) => _entrar(),
                       ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: _carregando
+                              ? null
+                              : () => context.go(Rotas.recuperarSenha),
+                          child: const Text('Esqueci minha senha'),
+                        ),
+                      ),
+
                       if (_erro != null) ...[
                         const SizedBox(height: 16),
                         Text(
@@ -132,7 +142,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         onPressed: _carregando
                             ? null
                             : () => context.go(Rotas.cadastro),
-                        child: const Text('Criar conta'),
+                        child: const Text('Criar conta da minha empresa'),
                       ),
                     ],
                   ),
