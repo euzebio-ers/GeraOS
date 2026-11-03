@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/tema_controller.dart';
+import '../../auth/data/auth_repository.dart';
 
 class ConfiguracoesPage extends ConsumerWidget {
   const ConfiguracoesPage({super.key});
@@ -36,6 +37,12 @@ class ConfiguracoesPage extends ConsumerWidget {
             selected: {ref.watch(temaProvider)},
             onSelectionChanged: (selecao) =>
                 ref.read(temaProvider.notifier).alterar(selecao.first),
+          ),
+          const SizedBox(height: 32),
+          OutlinedButton.icon(
+            onPressed: () => ref.read(authRepositoryProvider).sair(),
+            icon: const Icon(Icons.logout),
+            label: const Text('Sair da conta'),
           ),
         ],
       ),
