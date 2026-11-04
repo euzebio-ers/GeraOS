@@ -10,7 +10,10 @@ import 'package:geraos/features/clientes/data/clientes_repository.dart';
 import 'package:geraos/features/clientes/domain/cliente.dart';
 import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 import 'package:geraos/features/ordens_servico/data/ordens_servico_repository.dart';
+import 'package:geraos/features/ordens_servico/domain/filtro_status.dart';
 import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
+import 'package:geraos/features/ordens_servico/domain/os_resumo.dart';
+import 'package:geraos/features/ordens_servico/domain/status_os.dart';
 import 'package:geraos/features/organizacao/data/estado_organizacao.dart';
 import 'package:geraos/features/organizacao/data/organizacao_repository.dart';
 import 'package:geraos/features/organizacao/domain/membro_atual.dart';
@@ -182,8 +185,12 @@ class ClientesRepositoryFalso implements ClientesRepository {
   }
 }
 
-/// Versão falsa do repositório de OS.
+/// Versão falsa do repositório de OS, com uma lista fixa.
 class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
+  OrdensServicoRepositoryFalso({this.ordens = const []});
+
+  final List<OsResumo> ordens;
+
   /// A última OS enviada para `criarDigitada`.
   NovaOs? criada;
 
@@ -191,6 +198,35 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   Future<OsCriada> criarDigitada(NovaOs os) async {
     criada = os;
     return (id: 'os-teste', numero: 42);
+  }
+
+  @override
+  Future<List<OsResumo>> listar({
+    FiltroStatus filtro = FiltroStatus.todas,
+    String busca = '',
+    int pagina = 0,
+  }) async {
+    final termo = busca.toLowerCase();
+    final filtradas = ordens.where((os) {
+      final noFiltro =
+          filtro == FiltroStatus.todas || filtro.status.contains(os.status);
+      final naBusca =
+          os.clienteNome.toLowerCase().contains(termo) ||
+          os.equipamento.toLowerCase().contains(termo);
+      return noFiltro && naBusca;
+    }).toList();
+
+    const tamanho = OrdensServicoRepository.tamanhoPagina;
+    return filtradas.skip(pagina * tamanho).take(tamanho).toList();
+  }
+
+  @override
+  Future<Map<StatusOs, int>> contarPorStatus() async {
+    final contagem = <StatusOs, int>{};
+    for (final os in ordens) {
+      contagem[os.status] = (contagem[os.status] ?? 0) + 1;
+    }
+    return contagem;
   }
 }
 

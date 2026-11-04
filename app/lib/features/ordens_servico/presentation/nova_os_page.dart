@@ -114,6 +114,7 @@ class _NovaOsPageState extends ConsumerState<NovaOsPage> {
           .read(ordensServicoRepositoryProvider)
           .criarDigitada(os);
       ref.invalidate(listaClientesProvider);
+      ref.read(atualizacaoOsProvider.notifier).avisar();
       mensagens.showSnackBar(
         SnackBar(
           content: Text('OS ${formatarNumeroOs(criada.numero)} criada.'),

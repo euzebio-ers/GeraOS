@@ -1,10 +1,12 @@
-insert into public.clientes (organizacao_id, nome, telefone)
-select m.organizacao_id, c.nome, c.telefone
-from public.membros m
-cross join (values
-  ('Marina Costa',      '+5571992341180'),
-  ('Carlos Menezes',    '+5571991205567'),
-  ('Ana Beatriz Lima',  '+5571987012234'),
-  ('Paulo Sérgio Dias', '+5575991023344')
-) as c(nome, telefone)
-where m.usuario_id = (select id from auth.users where email = 'kemano2040@emailkeep.com');
+select public.criar_os_digitada(
+  p_equipamento        => 'Aparelho de teste ' || n,
+  p_descricao_problema => 'Teste da lista',
+  p_cliente_nome       => 'Cliente ' || n,
+  p_cliente_telefone   => '+557199' || lpad(n::text, 7, '0')
+)
+from generate_series(1, 70) as n,
+lateral (
+  select set_config('request.jwt.claims',
+    json_build_object('sub', (select id from auth.users where email = 'dev@geraos.local'),
+                      'role', 'authenticated')::text, true)
+) as login;

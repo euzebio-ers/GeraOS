@@ -15,3 +15,14 @@ String dataRelativa(DateTime data, {DateTime? agora}) {
 
 /// Só a data, sem horário, para comparar dias inteiros.
 DateTime _dia(DateTime data) => DateTime.utc(data.year, data.month, data.day);
+
+/// Data e hora curtas para os cartões de OS: "hoje 14:32", "ontem", "28/10".
+String dataHoraCurta(DateTime data, {DateTime? agora}) {
+  final relativa = dataRelativa(data, agora: agora);
+  if (relativa != 'hoje') return relativa;
+
+  final local = data.toLocal();
+  final hora = local.hour.toString().padLeft(2, '0');
+  final minuto = local.minute.toString().padLeft(2, '0');
+  return 'hoje $hora:$minuto';
+}
