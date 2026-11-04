@@ -11,6 +11,7 @@ import '../../features/clientes/presentation/cliente_form_page.dart';
 import '../../features/clientes/presentation/clientes_page.dart';
 import '../../features/configuracoes/presentation/configuracoes_page.dart';
 import '../../features/inicio/presentation/inicio_page.dart';
+import '../../features/ordens_servico/presentation/detalhe_os_page.dart';
 import '../../features/ordens_servico/presentation/gravar_os_page.dart';
 import '../../features/ordens_servico/presentation/lista_os_page.dart';
 import '../../features/ordens_servico/presentation/nova_os_page.dart';
@@ -109,10 +110,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                 path: Rotas.ordensServico,
                 builder: (context, state) => const ListaOsPage(),
                 routes: [
+                  // "nova" vem antes de ":id", senão seria lido como um id.
                   GoRoute(
                     path: 'nova',
                     parentNavigatorKey: chaveRaiz,
                     builder: (context, state) => const NovaOsPage(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    parentNavigatorKey: chaveRaiz,
+                    builder: (context, state) =>
+                        DetalheOsPage(osId: state.pathParameters['id']!),
                   ),
                 ],
               ),

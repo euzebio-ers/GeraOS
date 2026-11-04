@@ -18,6 +18,7 @@ abstract final class Rotas {
 
   // Dentro das abas, abertas em tela cheia
   static const novaOs = '/os/nova';
+  static String os(String id) => '/os/$id';
   static const novoCliente = '/clientes/novo';
   static String cliente(String id) => '/clientes/$id';
 

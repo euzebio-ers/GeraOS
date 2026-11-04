@@ -15,8 +15,16 @@ enum StatusOs {
   /// Como o status é gravado no banco.
   final String valorBanco;
 
-  /// Como o status aparece na tela.
+  /// Como o status aparece nas etiquetas e nos filtros.
   final String rotulo;
+
+  /// Nome mais preciso, usado no histórico, onde "Pendente → Pendente"
+  /// (aberta → em análise) não diria nada.
+  String get rotuloDetalhado => switch (this) {
+    StatusOs.aberta => 'Aberta',
+    StatusOs.emAnalise => 'Em análise',
+    _ => rotulo,
+  };
 
   /// Converte o valor vindo do banco.
   static StatusOs doBanco(String valor) => values.firstWhere(

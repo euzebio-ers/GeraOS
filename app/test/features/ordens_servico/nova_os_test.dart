@@ -3,15 +3,30 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:geraos/core/formatting/moeda.dart';
 import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
+import 'package:geraos/features/ordens_servico/domain/os_detalhe.dart';
+import 'package:geraos/features/ordens_servico/domain/status_os.dart';
 
 import '../../helpers/app_teste.dart';
+
+/// Detalhe que o app abre depois de criar a OS.
+final _detalheCriado = OsDetalhe(
+  id: 'os-teste',
+  numero: 42,
+  status: StatusOs.aberta,
+  equipamento: 'Notebook Dell',
+  descricaoProblema: 'Não liga',
+  criadoEm: DateTime(2026, 11, 4),
+  cliente: const ClienteDaOs(id: 'c-novo', nome: 'Fernanda Rocha'),
+);
 
 /// Abre a Nova OS pelo botão "Digitar OS" da Início.
 Future<OrdensServicoRepositoryFalso> abrirNovaOs(
   WidgetTester tester, {
   List<ClienteResumo> clientes = const [],
 }) async {
-  final repositorio = OrdensServicoRepositoryFalso();
+  final repositorio = OrdensServicoRepositoryFalso(
+    detalhes: {'os-teste': _detalheCriado},
+  );
   await montarApp(
     tester,
     EstadoAutenticacaoFalso(logado: true),
@@ -92,7 +107,7 @@ void main() {
     expect(os.clienteNome, 'Fernanda Rocha');
     expect(os.clienteTelefone, '+5571984550912');
     expect(os.valorEstimado, 150);
-    expect(find.text('OS #0042 criada.'), findsOneWidget);
+    expect(find.text('OS #0042'), findsOneWidget);
   });
 
   testWidgets('OS com cliente escolhido na busca', (tester) async {

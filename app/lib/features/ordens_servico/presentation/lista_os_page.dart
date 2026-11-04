@@ -202,7 +202,8 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
         separatorBuilder: (context, indice) => const SizedBox(height: 10),
         itemBuilder: (context, indice) {
           if (indice == _itens.length) return _rodape();
-          return CartaoOs(os: _itens[indice]);
+          final os = _itens[indice];
+          return CartaoOs(os: os, aoTocar: () => context.push(Rotas.os(os.id)));
         },
       ),
     );

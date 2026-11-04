@@ -12,6 +12,7 @@ import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 import 'package:geraos/features/ordens_servico/data/ordens_servico_repository.dart';
 import 'package:geraos/features/ordens_servico/domain/filtro_status.dart';
 import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
+import 'package:geraos/features/ordens_servico/domain/os_detalhe.dart';
 import 'package:geraos/features/ordens_servico/domain/os_resumo.dart';
 import 'package:geraos/features/ordens_servico/domain/status_os.dart';
 import 'package:geraos/features/organizacao/data/estado_organizacao.dart';
@@ -187,9 +188,15 @@ class ClientesRepositoryFalso implements ClientesRepository {
 
 /// Versão falsa do repositório de OS, com uma lista fixa.
 class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
-  OrdensServicoRepositoryFalso({this.ordens = const []});
+  OrdensServicoRepositoryFalso({
+    this.ordens = const [],
+    this.detalhes = const {},
+  });
 
   final List<OsResumo> ordens;
+
+  /// O detalhe de cada OS, pelo id.
+  final Map<String, OsDetalhe> detalhes;
 
   /// A última OS enviada para `criarDigitada`.
   NovaOs? criada;
@@ -218,6 +225,13 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
 
     const tamanho = OrdensServicoRepository.tamanhoPagina;
     return filtradas.skip(pagina * tamanho).take(tamanho).toList();
+  }
+
+  @override
+  Future<OsDetalhe> buscarDetalhe(String id) async {
+    final detalhe = detalhes[id];
+    if (detalhe == null) throw const OsNaoEncontrada();
+    return detalhe;
   }
 
   @override

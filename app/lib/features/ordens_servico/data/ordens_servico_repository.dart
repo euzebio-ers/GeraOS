@@ -4,11 +4,17 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_provider.dart';
 import '../domain/filtro_status.dart';
 import '../domain/nova_os.dart';
+import '../domain/os_detalhe.dart';
 import '../domain/os_resumo.dart';
 import '../domain/status_os.dart';
 
 /// Resultado da criação de uma OS.
 typedef OsCriada = ({String id, int numero});
+
+/// A OS não existe ou é de outra organização.
+class OsNaoEncontrada implements Exception {
+  const OsNaoEncontrada();
+}
 
 class OrdensServicoRepository {
   OrdensServicoRepository(this._supabase);
@@ -85,6 +91,13 @@ class OrdensServicoRepository {
             (linha['quantidade'] as num).toInt(),
     };
   }
+
+  /// A OS completa: cliente, itens e histórico.
+  Future<OsDetalhe> buscarDetalhe(String id) async {
+    final dados = await _supabase.rpc('detalhe_os', params: {'p_os_id': id});
+    if (dados == null) throw const OsNaoEncontrada();
+    return OsDetalhe.deJson(dados as Map<String, dynamic>);
+  }
 }
 
 final ordensServicoRepositoryProvider = Provider<OrdensServicoRepository>(
@@ -109,4 +122,13 @@ final contagemStatusProvider = FutureProvider.autoDispose<Map<StatusOs, int>>((
 ) {
   ref.watch(atualizacaoOsProvider);
   return ref.watch(ordensServicoRepositoryProvider).contarPorStatus();
+});
+
+/// O detalhe de uma OS, refeito sempre que as OS mudam.
+final detalheOsProvider = FutureProvider.autoDispose.family<OsDetalhe, String>((
+  ref,
+  id,
+) {
+  ref.watch(atualizacaoOsProvider);
+  return ref.watch(ordensServicoRepositoryProvider).buscarDetalhe(id);
 });

@@ -120,7 +120,7 @@ class _NovaOsPageState extends ConsumerState<NovaOsPage> {
           content: Text('OS ${formatarNumeroOs(criada.numero)} criada.'),
         ),
       );
-      if (mounted) context.pop();
+      if (mounted) context.pushReplacement(Rotas.os(criada.id));
     } on Exception {
       if (mounted) {
         setState(() {
