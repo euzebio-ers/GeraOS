@@ -245,10 +245,20 @@ otp_expiry = 900
 # sender_name = "Admin"
 
 # Uncomment to customize email template
+# Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
+[auth.email.template.confirmation]
+subject = "Confirme seu cadastro no GeraOS"
+content_path = "./supabase/templates/confirmacao.html"
+
+[auth.email.template.recovery]
+subject = "Crie uma nova senha no GeraOS"
+content_path = "./supabase/templates/recuperacao.html"
+
+# content_path = "./supabase/templates/invite.html"
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
