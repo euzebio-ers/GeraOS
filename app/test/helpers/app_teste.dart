@@ -10,6 +10,8 @@ import 'package:geraos/features/organizacao/data/estado_organizacao.dart';
 import 'package:geraos/features/organizacao/data/organizacao_repository.dart';
 import 'package:geraos/features/organizacao/domain/membro_atual.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geraos/features/clientes/data/clientes_repository.dart';
+import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 
 /// Versão falsa do estado de login, controlada pelo próprio teste.
 class EstadoAutenticacaoFalso extends EstadoAutenticacao {
@@ -142,6 +144,21 @@ class OrganizacaoRepositoryFalso implements OrganizacaoRepository {
   }
 }
 
+/// Versão falsa do repositório de clientes, com uma lista fixa.
+class ClientesRepositoryFalso implements ClientesRepository {
+  ClientesRepositoryFalso({this.clientes = const []});
+
+  final List<ClienteResumo> clientes;
+
+  @override
+  Future<List<ClienteResumo>> listar({String busca = ''}) async {
+    final termo = busca.toLowerCase();
+    return clientes
+        .where((cliente) => cliente.nome.toLowerCase().contains(termo))
+        .toList();
+  }
+}
+
 /// Monta o app completo com dependências falsas.
 ///
 /// Use `esperarAnimacoes: false` em telas com animação contínua
@@ -152,6 +169,7 @@ Future<SharedPreferences> montarApp(
   AuthRepository? authRepository,
   EstadoOrganizacao? organizacao,
   OrganizacaoRepository? organizacaoRepository,
+  ClientesRepository? clientesRepository,
   bool esperarAnimacoes = true,
 }) async {
   SharedPreferences.setMockInitialValues({});
@@ -170,6 +188,9 @@ Future<SharedPreferences> montarApp(
         ),
         organizacaoRepositoryProvider.overrideWithValue(
           organizacaoRepository ?? OrganizacaoRepositoryFalso(),
+        ),
+        clientesRepositoryProvider.overrideWithValue(
+          clientesRepository ?? ClientesRepositoryFalso(),
         ),
       ],
       child: const GeraOsApp(),
