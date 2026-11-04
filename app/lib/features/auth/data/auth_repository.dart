@@ -6,6 +6,7 @@ import '../../../core/router/rotas.dart';
 import '../../../core/supabase/supabase_provider.dart';
 import '../domain/falha_autenticacao.dart';
 import '../domain/resultado_cadastro.dart';
+import '../../../core/config/ambiente.dart';
 
 /// Operações de conta no Supabase Auth.
 class AuthRepository {
@@ -15,10 +16,10 @@ class AuthRepository {
 
   /// Para onde os links dos e-mails devem voltar.
   ///
-  /// Na web, é o endereço em que o app está aberto. No celular, será
-  /// configurado na parte 6.4b; até lá, vale o `site_url` do Supabase.
-  String? _enderecoDoApp([String caminho = '']) =>
-      kIsWeb ? '${Uri.base.origin}$caminho' : null;
+  /// Na web, é o endereço em que o app está aberto.
+  /// No celular, é o deep link que abre o app.
+  String _enderecoDoApp([String caminho = '']) =>
+      kIsWeb ? '${Uri.base.origin}$caminho' : Ambiente.deepLinkAutenticacao;
 
   Future<void> entrar({required String email, required String senha}) async {
     try {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Erro de autenticação já traduzido para exibir ao usuário.
@@ -10,6 +11,14 @@ class FalhaAutenticacao implements Exception {
     AuthException erro, {
     String padrao = 'Não foi possível entrar. Tente novamente.',
   }) {
+    
+    if (kDebugMode) {
+      debugPrint(
+        'FalhaAutenticacao: ${erro.runtimeType} '
+        'code=${erro.code} status=${erro.statusCode} mensagem=${erro.message}',
+      );
+    }
+
     if (erro is AuthRetryableFetchException) {
       return const FalhaAutenticacao(
         'Sem conexão com o servidor. Verifique sua internet e tente novamente.',

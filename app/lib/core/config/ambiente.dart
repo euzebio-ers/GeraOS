@@ -10,6 +10,10 @@ abstract final class Ambiente {
     'SUPABASE_PUBLISHABLE_KEY',
   );
 
+  /// Endereço que abre o app no celular quando um link de e-mail é tocado.
+  static const deepLinkAutenticacao =
+      'io.github.euzebioers.geraos://login-callback';
+
   static bool get ehProducao => nome == 'producao';
 
   /// Falha cedo, com uma mensagem clara, se a configuração não foi passada.

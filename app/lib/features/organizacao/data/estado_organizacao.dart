@@ -57,7 +57,10 @@ class EstadoOrganizacaoSupabase extends EstadoOrganizacao {
             ? SituacaoOrganizacao.semOrganizacao
             : SituacaoOrganizacao.pronta,
       );
-    } on Exception {
+    } on Exception catch (erro) {
+      if (kDebugMode) {
+        debugPrint('EstadoOrganizacao: falha ao buscar o membro: $erro');
+      }
       _alterar(SituacaoOrganizacao.erro);
     }
   }
