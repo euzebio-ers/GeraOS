@@ -4,42 +4,26 @@ import '../../../../core/theme/cores_geraos.dart';
 
 /// Cartão de destaque da tela Início, que abre a gravação por áudio.
 class CartaoGravarOs extends StatelessWidget {
-  const CartaoGravarOs({super.key, required this.onTap, this.suave = false});
+  const CartaoGravarOs({super.key, required this.onTap});
 
   final VoidCallback onTap;
-
-  /// TEMPORÁRIO: versão clara do cartão, só para comparar no tema claro.
-  /// Será removida depois da escolha.
-  final bool suave;
 
   @override
   Widget build(BuildContext context) {
     final cores = context.cores;
-    final esquema = Theme.of(context).colorScheme;
     final escuro = Theme.of(context).brightness == Brightness.dark;
-    final usarSuave = suave && !escuro;
-
-    final fundo = usarSuave
-        ? esquema.primaryContainer
-        : cores.cartaoGravarFundo;
-    final texto = usarSuave
-        ? esquema.onPrimaryContainer
-        : cores.cartaoGravarTexto;
-    final subtexto = usarSuave
-        ? esquema.onSurfaceVariant
-        : cores.cartaoGravarSubtexto;
 
     return Semantics(
       button: true,
       label: 'Gravar nova OS por áudio',
       excludeSemantics: true,
       child: Material(
-        color: fundo,
+        color: cores.cartaoGravarFundo,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
           side: escuro
-              ? BorderSide(color: esquema.outlineVariant)
+              ? BorderSide(color: Theme.of(context).colorScheme.outlineVariant)
               : BorderSide.none,
         ),
         child: InkWell(
@@ -71,7 +55,7 @@ class CartaoGravarOs extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
-                          color: texto,
+                          color: cores.cartaoGravarTexto,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -80,7 +64,7 @@ class CartaoGravarOs extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           height: 1.4,
-                          color: subtexto,
+                          color: cores.cartaoGravarSubtexto,
                         ),
                       ),
                     ],

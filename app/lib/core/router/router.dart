@@ -7,11 +7,15 @@ import '../../features/auth/presentation/cadastro_page.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/nova_senha_page.dart';
 import '../../features/auth/presentation/recuperar_senha_page.dart';
+import '../../features/clientes/presentation/clientes_page.dart';
 import '../../features/configuracoes/presentation/configuracoes_page.dart';
+import '../../features/inicio/presentation/inicio_page.dart';
+import '../../features/ordens_servico/presentation/gravar_os_page.dart';
 import '../../features/ordens_servico/presentation/lista_os_page.dart';
 import '../../features/organizacao/data/estado_organizacao.dart';
 import '../../features/organizacao/presentation/configurar_organizacao_page.dart';
 import '../../features/organizacao/presentation/preparando_page.dart';
+import '../widgets/casca_app.dart';
 import 'rotas.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -19,7 +23,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   final organizacao = ref.watch(estadoOrganizacaoProvider);
 
   final router = GoRouter(
-    initialLocation: Rotas.ordensServico,
+    initialLocation: Rotas.paginaInicial,
     refreshListenable: Listenable.merge([auth, organizacao]),
     redirect: (context, state) {
       final local = state.matchedLocation;
@@ -45,13 +49,15 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       // 4. Tudo pronto: não faz sentido ficar nas telas de entrada.
       final telaDeEntrada = telaPublica || Rotas.entrada.contains(local);
-      return telaDeEntrada ? Rotas.ordensServico : null;
+      return telaDeEntrada ? Rotas.paginaInicial : null;
     },
     routes: [
       GoRoute(
         path: Rotas.raiz,
-        redirect: (context, state) => Rotas.ordensServico,
+        redirect: (context, state) => Rotas.paginaInicial,
       ),
+
+      // Entrada
       GoRoute(
         path: Rotas.login,
         builder: (context, state) => const LoginPage(),
@@ -76,13 +82,51 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Rotas.configurarOrganizacao,
         builder: (context, state) => const ConfigurarOrganizacaoPage(),
       ),
-      GoRoute(
-        path: Rotas.ordensServico,
-        builder: (context, state) => const ListaOsPage(),
+
+      // Abas
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            CascaApp(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Rotas.inicio,
+                builder: (context, state) => const InicioPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Rotas.ordensServico,
+                builder: (context, state) => const ListaOsPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Rotas.clientes,
+                builder: (context, state) => const ClientesPage(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: Rotas.mais,
+                builder: (context, state) => const ConfiguracoesPage(),
+              ),
+            ],
+          ),
+        ],
       ),
+
+      // Por cima das abas
       GoRoute(
-        path: Rotas.configuracoes,
-        builder: (context, state) => const ConfiguracoesPage(),
+        path: Rotas.gravarOs,
+        builder: (context, state) => const GravarOsPage(),
       ),
     ],
   );

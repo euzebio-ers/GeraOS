@@ -54,7 +54,7 @@ void main() {
 
     expect(repositorio.organizacaoCriada, 'TecFix Assistência');
     expect(organizacao.recarregamentos, 1);
-    expect(find.text('Ordens de Serviço'), findsOneWidget);
+    expect(find.text('Gravar nova OS'), findsOneWidget);
   });
 
   testWidgets('Erro ao carregar permite tentar de novo', (tester) async {
@@ -71,6 +71,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(organizacao.recarregamentos, 1);
-    expect(find.text('Ordens de Serviço'), findsOneWidget);
+    expect(find.text('Gravar nova OS'), findsOneWidget);
   });
 }

@@ -56,7 +56,7 @@ void main() {
       authRepository: repositorio,
     );
 
-    await tester.tap(find.byTooltip('Configurações'));
+    await tester.tap(find.text('Mais'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sair da conta'));
     await tester.pumpAndSettle();

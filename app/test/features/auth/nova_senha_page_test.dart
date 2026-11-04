@@ -33,6 +33,6 @@ void main() {
 
     expect(repositorio.novaSenhaDefinida, 'novaSenha123');
     expect(auth.recuperandoSenha, isFalse);
-    expect(find.text('Ordens de Serviço'), findsOneWidget);
+    expect(find.text('Gravar nova OS'), findsOneWidget);
   });
 }

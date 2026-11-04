@@ -10,7 +10,7 @@ void main() {
 
   testWidgets('Usuário logado vê a lista de OS', (tester) async {
     await montarApp(tester, EstadoAutenticacaoFalso(logado: true));
-    expect(find.text('Ordens de Serviço'), findsOneWidget);
+    expect(find.text('Gravar nova OS'), findsOneWidget);
   });
 
   testWidgets('Ao sair da conta, o app volta para o login', (tester) async {
@@ -29,7 +29,7 @@ void main() {
       EstadoAutenticacaoFalso(logado: true),
     );
 
-    await tester.tap(find.byTooltip('Configurações'));
+    await tester.tap(find.text('Mais'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Escuro'));
     await tester.pumpAndSettle();

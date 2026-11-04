@@ -177,6 +177,30 @@ abstract final class AppTheme {
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        height: 72,
+        elevation: 0,
+        backgroundColor: cores.surfaceContainer,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: cores.primaryContainer,
+        labelTextStyle: WidgetStateProperty.resolveWith((estados) {
+          final selecionada = estados.contains(WidgetState.selected);
+          return TextStyle(
+            fontFamily: Fontes.texto,
+            fontSize: 12,
+            fontWeight: selecionada ? FontWeight.w800 : FontWeight.w600,
+            color: selecionada ? cores.primary : cores.onSurfaceVariant,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((estados) {
+          final selecionada = estados.contains(WidgetState.selected);
+          return IconThemeData(
+            color: selecionada
+                ? cores.onPrimaryContainer
+                : cores.onSurfaceVariant,
+          );
+        }),
+      ),
     );
   }
 }

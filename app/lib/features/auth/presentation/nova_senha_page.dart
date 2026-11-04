@@ -47,7 +47,7 @@ class _NovaSenhaPageState extends ConsumerState<NovaSenhaPage> {
       mensagens.showSnackBar(
         const SnackBar(content: Text('Senha alterada com sucesso.')),
       );
-      if (mounted) context.go(Rotas.ordensServico);
+      if (mounted) context.go(Rotas.paginaInicial);
     } on FalhaAutenticacao catch (falha) {
       if (mounted) setState(() => _erro = falha.mensagem);
     } finally {
