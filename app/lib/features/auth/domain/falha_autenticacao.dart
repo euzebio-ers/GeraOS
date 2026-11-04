@@ -11,7 +11,6 @@ class FalhaAutenticacao implements Exception {
     AuthException erro, {
     String padrao = 'Não foi possível entrar. Tente novamente.',
   }) {
-    
     if (kDebugMode) {
       debugPrint(
         'FalhaAutenticacao: ${erro.runtimeType} '
