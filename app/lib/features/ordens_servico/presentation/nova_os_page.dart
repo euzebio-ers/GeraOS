@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -274,9 +273,7 @@ class _NovaOsPageState extends ConsumerState<NovaOsPage> {
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
-                    ],
+                    inputFormatters: [MascaraMoeda()],
                     validator: Validadores.valorOpcional,
                     enabled: !_salvando,
                     onFieldSubmitted: (_) => _criar(),
