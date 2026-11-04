@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/formatting/telefone.dart';
 import '../../../core/validation/validadores.dart';
+import '../../../core/widgets/lista_formulario.dart';
 import '../data/clientes_repository.dart';
 import '../domain/cliente.dart';
 
@@ -142,7 +143,7 @@ class _FormularioClienteState extends ConsumerState<_FormularioCliente> {
       body: SafeArea(
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: ListaFormulario(
             padding: const EdgeInsets.all(20),
             children: [
               TextFormField(

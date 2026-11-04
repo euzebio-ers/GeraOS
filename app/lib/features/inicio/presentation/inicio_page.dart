@@ -62,11 +62,7 @@ class InicioPage extends ConsumerWidget {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('O cadastro de OS chega na Etapa 8.'),
-                      ),
-                    ),
+                    onPressed: () => context.push(Rotas.novaOs),
                     icon: const Icon(Icons.edit_outlined),
                     label: const Text('Digitar OS'),
                   ),

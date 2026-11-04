@@ -14,11 +14,14 @@ abstract final class Rotas {
   static const inicio = '/inicio';
   static const ordensServico = '/os';
   static const clientes = '/clientes';
-  static const novoCliente = '/clientes/novo';
-  static String cliente(String id) => '/clientes/$id';
   static const mais = '/mais';
 
-  // Telas abertas por cima das abas
+  // Dentro das abas, abertas em tela cheia
+  static const novaOs = '/os/nova';
+  static const novoCliente = '/clientes/novo';
+  static String cliente(String id) => '/clientes/$id';
+
+  // Por cima das abas
   static const gravarOs = '/gravar';
 
   /// Para onde a pessoa vai depois de entrar no app.

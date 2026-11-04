@@ -6,13 +6,15 @@ import 'package:geraos/features/auth/data/auth_repository.dart';
 import 'package:geraos/features/auth/data/estado_autenticacao.dart';
 import 'package:geraos/features/auth/domain/falha_autenticacao.dart';
 import 'package:geraos/features/auth/domain/resultado_cadastro.dart';
+import 'package:geraos/features/clientes/data/clientes_repository.dart';
+import 'package:geraos/features/clientes/domain/cliente.dart';
+import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
+import 'package:geraos/features/ordens_servico/data/ordens_servico_repository.dart';
+import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
 import 'package:geraos/features/organizacao/data/estado_organizacao.dart';
 import 'package:geraos/features/organizacao/data/organizacao_repository.dart';
 import 'package:geraos/features/organizacao/domain/membro_atual.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:geraos/features/clientes/data/clientes_repository.dart';
-import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
-import 'package:geraos/features/clientes/domain/cliente.dart';
 
 /// Versão falsa do estado de login, controlada pelo próprio teste.
 class EstadoAutenticacaoFalso extends EstadoAutenticacao {
@@ -180,6 +182,18 @@ class ClientesRepositoryFalso implements ClientesRepository {
   }
 }
 
+/// Versão falsa do repositório de OS.
+class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
+  /// A última OS enviada para `criarDigitada`.
+  NovaOs? criada;
+
+  @override
+  Future<OsCriada> criarDigitada(NovaOs os) async {
+    criada = os;
+    return (id: 'os-teste', numero: 42);
+  }
+}
+
 /// Monta o app completo com dependências falsas.
 ///
 /// Use `esperarAnimacoes: false` em telas com animação contínua
@@ -191,6 +205,7 @@ Future<SharedPreferences> montarApp(
   EstadoOrganizacao? organizacao,
   OrganizacaoRepository? organizacaoRepository,
   ClientesRepository? clientesRepository,
+  OrdensServicoRepository? ordensServicoRepository,
   bool esperarAnimacoes = true,
 }) async {
   SharedPreferences.setMockInitialValues({});
@@ -212,6 +227,9 @@ Future<SharedPreferences> montarApp(
         ),
         clientesRepositoryProvider.overrideWithValue(
           clientesRepository ?? ClientesRepositoryFalso(),
+        ),
+        ordensServicoRepositoryProvider.overrideWithValue(
+          ordensServicoRepository ?? OrdensServicoRepositoryFalso(),
         ),
       ],
       child: const GeraOsApp(),

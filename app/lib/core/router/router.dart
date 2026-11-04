@@ -13,6 +13,7 @@ import '../../features/configuracoes/presentation/configuracoes_page.dart';
 import '../../features/inicio/presentation/inicio_page.dart';
 import '../../features/ordens_servico/presentation/gravar_os_page.dart';
 import '../../features/ordens_servico/presentation/lista_os_page.dart';
+import '../../features/ordens_servico/presentation/nova_os_page.dart';
 import '../../features/organizacao/data/estado_organizacao.dart';
 import '../../features/organizacao/presentation/configurar_organizacao_page.dart';
 import '../../features/organizacao/presentation/preparando_page.dart';
@@ -107,6 +108,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Rotas.ordensServico,
                 builder: (context, state) => const ListaOsPage(),
+                routes: [
+                  GoRoute(
+                    path: 'nova',
+                    parentNavigatorKey: chaveRaiz,
+                    builder: (context, state) => const NovaOsPage(),
+                  ),
+                ],
               ),
             ],
           ),
