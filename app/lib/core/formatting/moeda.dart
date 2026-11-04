@@ -67,3 +67,12 @@ class MascaraMoeda extends TextInputFormatter {
     return resultado.toString();
   }
 }
+
+/// Um valor já salvo, no formato que a máscara mostra: 30.0 → "30,00".
+/// Usado para preencher um campo com máscara ao editar.
+String valorParaMascara(double valor) => MascaraMoeda()
+    .formatEditUpdate(
+      TextEditingValue.empty,
+      TextEditingValue(text: (valor * 100).round().toString()),
+    )
+    .text;

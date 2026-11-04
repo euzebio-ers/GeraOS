@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_provider.dart';
+import '../domain/dados_item.dart';
+import '../domain/falha_os.dart';
 import '../domain/filtro_status.dart';
 import '../domain/nova_os.dart';
 import '../domain/os_detalhe.dart';
@@ -97,6 +99,66 @@ class OrdensServicoRepository {
     final dados = await _supabase.rpc('detalhe_os', params: {'p_os_id': id});
     if (dados == null) throw const OsNaoEncontrada();
     return OsDetalhe.deJson(dados as Map<String, dynamic>);
+  }
+
+  /// Muda o status pela função do banco, que valida a transição (RN007)
+  /// e registra o histórico (RN006).
+  Future<void> alterarStatus(
+    String osId,
+    StatusOs novo, {
+    String? observacao,
+  }) => _alterar(
+    () => _supabase.rpc(
+      'alterar_status_os',
+      params: {
+        'p_os_id': osId,
+        'p_novo_status': novo.valorBanco,
+        'p_observacao': ?observacao,
+      },
+    ),
+  );
+
+  Future<void> salvarDiagnostico(String osId, String? diagnostico) => _alterar(
+    () => _supabase
+        .from('ordens_servico')
+        .update({'diagnostico': diagnostico})
+        .eq('id', osId),
+  );
+
+  /// O total é recalculado pelo banco (RN008).
+  Future<void> salvarDesconto(String osId, double desconto) => _alterar(
+    () => _supabase
+        .from('ordens_servico')
+        .update({'desconto': desconto})
+        .eq('id', osId),
+  );
+
+  /// Inclui (sem id) ou altera (com id) um item da OS.
+  Future<void> salvarItem(String osId, DadosItem item) => _alterar(() {
+    final id = item.id;
+    if (id == null) {
+      return _supabase.from('itens_os').insert({
+        ...item.paraJson(),
+        'os_id': osId,
+      });
+    }
+    return _supabase.from('itens_os').update(item.paraJson()).eq('id', id);
+  });
+
+  Future<void> removerItem(String itemId) =>
+      _alterar(() => _supabase.from('itens_os').delete().eq('id', itemId));
+
+  /// Executa uma alteração e traduz os erros para `FalhaOs`.
+  Future<void> _alterar(Future<Object?> Function() operacao) async {
+    try {
+      await operacao();
+    } on PostgrestException catch (erro) {
+      throw FalhaOs.de(erro);
+    } on Exception {
+      throw const FalhaOs(
+        'Não foi possível salvar. Verifique sua conexão e tente novamente.',
+      );
+    }
   }
 }
 

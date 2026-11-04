@@ -10,6 +10,7 @@ import 'package:geraos/features/clientes/data/clientes_repository.dart';
 import 'package:geraos/features/clientes/domain/cliente.dart';
 import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 import 'package:geraos/features/ordens_servico/data/ordens_servico_repository.dart';
+import 'package:geraos/features/ordens_servico/domain/dados_item.dart';
 import 'package:geraos/features/ordens_servico/domain/filtro_status.dart';
 import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
 import 'package:geraos/features/ordens_servico/domain/os_detalhe.dart';
@@ -186,7 +187,8 @@ class ClientesRepositoryFalso implements ClientesRepository {
   }
 }
 
-/// Versão falsa do repositório de OS, com uma lista fixa.
+/// Versão falsa do repositório de OS, com dados fixos.
+/// As alterações ficam registradas para o teste conferir.
 class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   OrdensServicoRepositoryFalso({
     this.ordens = const [],
@@ -198,8 +200,13 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   /// O detalhe de cada OS, pelo id.
   final Map<String, OsDetalhe> detalhes;
 
-  /// A última OS enviada para `criarDigitada`.
   NovaOs? criada;
+  StatusOs? statusAlterado;
+  String? motivo;
+  String? diagnosticoSalvo;
+  double? descontoSalvo;
+  DadosItem? itemSalvo;
+  String? itemRemovido;
 
   @override
   Future<OsCriada> criarDigitada(NovaOs os) async {
@@ -228,6 +235,15 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   }
 
   @override
+  Future<Map<StatusOs, int>> contarPorStatus() async {
+    final contagem = <StatusOs, int>{};
+    for (final os in ordens) {
+      contagem[os.status] = (contagem[os.status] ?? 0) + 1;
+    }
+    return contagem;
+  }
+
+  @override
   Future<OsDetalhe> buscarDetalhe(String id) async {
     final detalhe = detalhes[id];
     if (detalhe == null) throw const OsNaoEncontrada();
@@ -235,12 +251,33 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   }
 
   @override
-  Future<Map<StatusOs, int>> contarPorStatus() async {
-    final contagem = <StatusOs, int>{};
-    for (final os in ordens) {
-      contagem[os.status] = (contagem[os.status] ?? 0) + 1;
-    }
-    return contagem;
+  Future<void> alterarStatus(
+    String osId,
+    StatusOs novo, {
+    String? observacao,
+  }) async {
+    statusAlterado = novo;
+    motivo = observacao;
+  }
+
+  @override
+  Future<void> salvarDiagnostico(String osId, String? diagnostico) async {
+    diagnosticoSalvo = diagnostico;
+  }
+
+  @override
+  Future<void> salvarDesconto(String osId, double desconto) async {
+    descontoSalvo = desconto;
+  }
+
+  @override
+  Future<void> salvarItem(String osId, DadosItem item) async {
+    itemSalvo = item;
+  }
+
+  @override
+  Future<void> removerItem(String itemId) async {
+    itemRemovido = itemId;
   }
 }
 

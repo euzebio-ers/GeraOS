@@ -7,11 +7,16 @@ import '../../../core/formatting/moeda.dart';
 import '../../../core/formatting/telefone.dart';
 import '../../../core/widgets/avatar_iniciais.dart';
 import '../../../core/widgets/lista_formulario.dart';
+import '../../organizacao/data/estado_organizacao.dart';
 import '../data/ordens_servico_repository.dart';
+import '../domain/falha_os.dart';
 import '../domain/formatos_os.dart';
 import '../domain/os_detalhe.dart';
 import '../domain/status_os.dart';
+import 'widgets/dialogo_item.dart';
+import 'widgets/dialogo_texto.dart';
 import 'widgets/etiqueta_status.dart';
+import 'widgets/folha_status.dart';
 
 class DetalheOsPage extends ConsumerWidget {
   const DetalheOsPage({super.key, required this.osId});
@@ -60,18 +65,146 @@ class DetalheOsPage extends ConsumerWidget {
   }
 }
 
-class _Detalhe extends StatelessWidget {
+class _Detalhe extends ConsumerWidget {
   const _Detalhe({required this.os});
 
   final OsDetalhe os;
 
-  void _emBreve(BuildContext context, String oQue) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text('$oQue chega na próxima parte.')));
+  /// OS entregue ou cancelada não aceita mais mudanças no orçamento.
+  bool get _editavel =>
+      os.status != StatusOs.entregue && os.status != StatusOs.cancelada;
+
+  /// Executa uma alteração, avisa as telas e mostra o resultado.
+  Future<void> _executar(
+    BuildContext context,
+    WidgetRef ref,
+    Future<void> Function(OrdensServicoRepository repositorio) acao,
+    String sucesso,
+  ) async {
+    final mensagens = ScaffoldMessenger.of(context);
+    try {
+      await acao(ref.read(ordensServicoRepositoryProvider));
+      ref.read(atualizacaoOsProvider.notifier).avisar();
+      mensagens.showSnackBar(SnackBar(content: Text(sucesso)));
+    } on FalhaOs catch (falha) {
+      mensagens.showSnackBar(SnackBar(content: Text(falha.mensagem)));
+    }
+  }
+
+  Future<void> _mudarStatus(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool ehAdmin,
+  }) async {
+    final novo = await escolherStatus(
+      context,
+      atual: os.status,
+      podeReabrir: ehAdmin,
+    );
+    if (novo == null || !context.mounted) return;
+
+    final reabrindo = os.status == StatusOs.entregue;
+    String? motivo;
+    if (novo == StatusOs.cancelada || reabrindo) {
+      motivo = await pedirTexto(
+        context,
+        titulo: reabrindo ? 'Reabrir OS' : 'Cancelar OS',
+        rotulo: 'Motivo',
+        ajuda: 'Fica registrado no histórico da OS.',
+        obrigatorio: true,
+        minLinhas: 2,
+        maximoCaracteres: 500,
+        textoConfirmar: reabrindo ? 'Reabrir' : 'Confirmar cancelamento',
+        textoDesistir: 'Voltar',
+      );
+      if (motivo == null || !context.mounted) return;
+    }
+
+    await _executar(
+      context,
+      ref,
+      (repositorio) =>
+          repositorio.alterarStatus(os.id, novo, observacao: motivo),
+      'Status alterado para ${novo.rotuloDetalhado}.',
+    );
+  }
+
+  Future<void> _editarDiagnostico(BuildContext context, WidgetRef ref) async {
+    final texto = await pedirTexto(
+      context,
+      titulo: 'Diagnóstico',
+      rotulo: 'O que foi encontrado',
+      inicial: os.diagnostico,
+      minLinhas: 3,
+      maximoCaracteres: 4000,
+    );
+    if (texto == null || !context.mounted) return;
+
+    await _executar(
+      context,
+      ref,
+      (repositorio) =>
+          repositorio.salvarDiagnostico(os.id, texto.isEmpty ? null : texto),
+      'Diagnóstico salvo.',
+    );
+  }
+
+  Future<void> _editarItem(
+    BuildContext context,
+    WidgetRef ref, [
+    ItemOs? item,
+  ]) async {
+    final resultado = await editarItem(context, item: item);
+    if (resultado == null || !context.mounted) return;
+
+    switch (resultado) {
+      case SalvarItem(:final dados):
+        await _executar(
+          context,
+          ref,
+          (repositorio) => repositorio.salvarItem(os.id, dados),
+          item == null ? 'Item adicionado.' : 'Item atualizado.',
+        );
+      case RemoverItem():
+        await _executar(
+          context,
+          ref,
+          (repositorio) => repositorio.removerItem(item!.id),
+          'Item removido.',
+        );
+    }
+  }
+
+  Future<void> _editarDesconto(BuildContext context, WidgetRef ref) async {
+    final texto = await pedirTexto(
+      context,
+      titulo: 'Desconto',
+      rotulo: 'Valor do desconto',
+      inicial: os.desconto > 0 ? valorParaMascara(os.desconto) : null,
+      ajuda: 'Deixe vazio para remover o desconto.',
+      prefixo: 'R\$ ',
+      teclado: TextInputType.number,
+      formatadores: [MascaraMoeda()],
+    );
+    if (texto == null || !context.mounted) return;
+
+    await _executar(
+      context,
+      ref,
+      (repositorio) =>
+          repositorio.salvarDesconto(os.id, textoParaValor(texto) ?? 0),
+      'Desconto salvo.',
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final ehAdmin =
+        ref.watch(estadoOrganizacaoProvider).membro?.ehAdmin ?? false;
+    final podeMudarStatus =
+        os.status.proximos.isNotEmpty ||
+        (os.status == StatusOs.entregue && ehAdmin);
+
     return Scaffold(
       appBar: AppBar(title: Text('OS ${formatarNumeroOs(os.numero)}')),
       body: ListaFormulario(
@@ -81,9 +214,23 @@ class _Detalhe extends StatelessWidget {
           const SizedBox(height: 16),
           _CartaoCliente(cliente: os.cliente),
           const SizedBox(height: 12),
-          _CartaoEquipamento(os: os),
+          _CartaoEquipamento(
+            os: os,
+            aoEditarDiagnostico: _editavel
+                ? () => _editarDiagnostico(context, ref)
+                : null,
+          ),
           const SizedBox(height: 12),
-          _CartaoOrcamento(os: os),
+          _CartaoOrcamento(
+            os: os,
+            aoEditarItem: _editavel
+                ? (item) => _editarItem(context, ref, item)
+                : null,
+            aoAdicionarItem: _editavel ? () => _editarItem(context, ref) : null,
+            aoEditarDesconto: _editavel
+                ? () => _editarDesconto(context, ref)
+                : null,
+          ),
           const SizedBox(height: 24),
           _Historico(os: os),
         ],
@@ -95,7 +242,11 @@ class _Detalhe extends StatelessWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _emBreve(context, 'O envio da OS'),
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('O envio da OS chega na próxima etapa.'),
+                    ),
+                  ),
                   icon: const Icon(Icons.send_outlined),
                   label: const Text('Enviar OS'),
                 ),
@@ -103,7 +254,9 @@ class _Detalhe extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: FilledButton(
-                  onPressed: () => _emBreve(context, 'A mudança de status'),
+                  onPressed: podeMudarStatus
+                      ? () => _mudarStatus(context, ref, ehAdmin: ehAdmin)
+                      : null,
                   child: const Text('Mudar status'),
                 ),
               ),
@@ -339,9 +492,10 @@ class _CartaoCliente extends StatelessWidget {
 }
 
 class _CartaoEquipamento extends StatelessWidget {
-  const _CartaoEquipamento({required this.os});
+  const _CartaoEquipamento({required this.os, this.aoEditarDiagnostico});
 
   final OsDetalhe os;
+  final VoidCallback? aoEditarDiagnostico;
 
   @override
   Widget build(BuildContext context) {
@@ -363,7 +517,18 @@ class _CartaoEquipamento extends StatelessWidget {
             const _Rotulo('Defeito relatado'),
             Text(os.descricaoProblema),
             const SizedBox(height: 14),
-            const _Rotulo('Diagnóstico'),
+            Row(
+              children: [
+                const Expanded(child: _Rotulo('Diagnóstico')),
+                if (aoEditarDiagnostico != null)
+                  IconButton(
+                    tooltip: 'Editar diagnóstico',
+                    visualDensity: VisualDensity.compact,
+                    onPressed: aoEditarDiagnostico,
+                    icon: const Icon(Icons.edit_outlined, size: 20),
+                  ),
+              ],
+            ),
             if (os.diagnostico == null)
               Text('Ainda sem diagnóstico.', style: secundario)
             else
@@ -381,9 +546,17 @@ class _CartaoEquipamento extends StatelessWidget {
 }
 
 class _CartaoOrcamento extends StatelessWidget {
-  const _CartaoOrcamento({required this.os});
+  const _CartaoOrcamento({
+    required this.os,
+    this.aoEditarItem,
+    this.aoAdicionarItem,
+    this.aoEditarDesconto,
+  });
 
   final OsDetalhe os;
+  final void Function(ItemOs item)? aoEditarItem;
+  final VoidCallback? aoAdicionarItem;
+  final VoidCallback? aoEditarDesconto;
 
   /// 1.0 → "1"; 1.5 → "1,5".
   static String _quantidade(double valor) => valor == valor.roundToDouble()
@@ -393,6 +566,7 @@ class _CartaoOrcamento extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tema = Theme.of(context);
+    final editarItem = aoEditarItem;
 
     return Card(
       child: Padding(
@@ -408,11 +582,13 @@ class _CartaoOrcamento extends StatelessWidget {
                   color: tema.colorScheme.onSurfaceVariant,
                   fontStyle: FontStyle.italic,
                 ),
-              )
-            else ...[
-              for (final item in os.itens)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+              ),
+            for (final item in os.itens)
+              InkWell(
+                onTap: editarItem == null ? null : () => editarItem(item),
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
                       Expanded(
@@ -427,9 +603,13 @@ class _CartaoOrcamento extends StatelessWidget {
                     ],
                   ),
                 ),
-              if (os.desconto > 0)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+              ),
+            if (os.desconto > 0)
+              InkWell(
+                onTap: aoEditarDesconto,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
                       const Expanded(child: Text('Desconto')),
@@ -437,6 +617,26 @@ class _CartaoOrcamento extends StatelessWidget {
                     ],
                   ),
                 ),
+              ),
+            if (aoAdicionarItem != null) ...[
+              const SizedBox(height: 4),
+              Wrap(
+                spacing: 8,
+                children: [
+                  TextButton.icon(
+                    onPressed: aoAdicionarItem,
+                    icon: const Icon(Icons.add_rounded),
+                    label: const Text('Adicionar item'),
+                  ),
+                  if (os.itens.isNotEmpty && os.desconto == 0)
+                    TextButton(
+                      onPressed: aoEditarDesconto,
+                      child: const Text('Dar desconto'),
+                    ),
+                ],
+              ),
+            ],
+            if (os.itens.isNotEmpty) ...[
               const Divider(height: 24),
               Row(
                 children: [
