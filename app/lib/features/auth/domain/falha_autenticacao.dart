@@ -24,6 +24,13 @@ class FalhaAutenticacao implements Exception {
       );
     }
 
+    if (erro is AuthWeakPasswordException && erro.reasons.contains('pwned')) {
+      return const FalhaAutenticacao(
+        'Essa senha já apareceu em vazamentos de dados de outros sites. '
+        'Por segurança, escolha outra.',
+      );
+    }
+
     return switch (erro.code) {
       'invalid_credentials' => const FalhaAutenticacao(
         'E-mail ou senha inválidos.',

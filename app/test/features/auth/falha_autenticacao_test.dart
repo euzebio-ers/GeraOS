@@ -30,4 +30,15 @@ void main() {
     );
     expect(falha.mensagem, 'Não foi possível criar a conta. Tente novamente.');
   });
+
+  test('senha vazada tem mensagem própria', () {
+    final falha = FalhaAutenticacao.de(
+      AuthWeakPasswordException(
+        message: 'Password is known to be weak and easy to guess',
+        statusCode: '422',
+        reasons: ['pwned'],
+      ),
+    );
+    expect(falha.mensagem, contains('vazamentos de dados'));
+  });
 }

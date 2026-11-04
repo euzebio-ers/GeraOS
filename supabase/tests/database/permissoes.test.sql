@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(8);
+select plan(10);
 
 -- table_privs_are confere a lista EXATA de permissões de tabela:
 -- falha se faltar alguma ou se sobrar alguma.
@@ -28,6 +28,12 @@ select table_privs_are('public', 'contadores_os', 'authenticated',
 
 select table_privs_are('public', 'clientes', 'anon',
   array[]::text[], 'Visitante não tem nenhuma permissão');
+
+select table_privs_are('public', 'ordens_servico_resumo', 'authenticated',
+  array['SELECT'], 'Logado só lê o resumo de OS');
+
+select table_privs_are('public', 'clientes_resumo', 'authenticated',
+  array['SELECT'], 'Logado só lê o resumo de clientes');
 
 select * from finish();
 rollback;
