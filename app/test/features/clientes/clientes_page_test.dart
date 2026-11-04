@@ -4,6 +4,8 @@ import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 
 import '../../helpers/app_teste.dart';
 
+import 'package:geraos/features/clientes/domain/cliente.dart';
+
 final _clientes = [
   ClienteResumo(
     id: '1',
@@ -75,5 +77,95 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Nenhum cliente encontrado.'), findsOneWidget);
+  });
+
+  test('Cliente grava só os campos editáveis', () {
+    const cliente = Cliente(
+      id: 'c1',
+      nome: 'Marina Costa',
+      telefone: '+5571992341180',
+    );
+
+    final json = cliente.paraJson();
+    expect(json.containsKey('id'), isFalse);
+    expect(json.containsKey('organizacao_id'), isFalse);
+    expect(json['telefone'], '+5571992341180');
+  });
+
+  testWidgets('Novo cliente exige telefone ou e-mail', (tester) async {
+    final repositorio = ClientesRepositoryFalso();
+    await montarApp(
+      tester,
+      EstadoAutenticacaoFalso(logado: true),
+      clientesRepository: repositorio,
+    );
+    await tester.tap(find.text('Clientes'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Novo cliente'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nome completo *'),
+      'Fernanda Rocha',
+    );
+    await tester.tap(find.text('Cadastrar cliente'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Informe o telefone ou o e-mail.'), findsOneWidget);
+    expect(repositorio.salvo, isNull);
+  });
+
+  testWidgets('Novo cliente é salvo com o telefone no formato do banco', (
+    tester,
+  ) async {
+    final repositorio = ClientesRepositoryFalso();
+    await montarApp(
+      tester,
+      EstadoAutenticacaoFalso(logado: true),
+      clientesRepository: repositorio,
+    );
+    await tester.tap(find.text('Clientes'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Novo cliente'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Nome completo *'),
+      'Fernanda Rocha',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'WhatsApp / telefone com DDD'),
+      '71984550912',
+    );
+    await tester.tap(find.text('Cadastrar cliente'));
+    await tester.pumpAndSettle();
+
+    expect(repositorio.salvo?.nome, 'Fernanda Rocha');
+    expect(repositorio.salvo?.telefone, '+5571984550912');
+    expect(repositorio.salvo?.id, isNull);
+    // Voltou para a lista.
+    expect(find.text('Nome ou telefone'), findsOneWidget);
+  });
+
+  testWidgets('Tocar num cliente abre a edição já preenchida', (tester) async {
+    final repositorio = ClientesRepositoryFalso(clientes: _clientes);
+    await montarApp(
+      tester,
+      EstadoAutenticacaoFalso(logado: true),
+      clientesRepository: repositorio,
+    );
+    await tester.tap(find.text('Clientes'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Marina Costa'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Editar cliente'), findsOneWidget);
+    expect(find.text('(71) 99234-1180'), findsOneWidget);
+
+    await tester.tap(find.text('Salvar alterações'));
+    await tester.pumpAndSettle();
+
+    expect(repositorio.salvo?.id, '2');
   });
 }

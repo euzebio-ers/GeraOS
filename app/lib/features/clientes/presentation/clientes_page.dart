@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/formatting/datas.dart';
 import '../../../core/formatting/telefone.dart';
+import '../../../core/router/rotas.dart';
 import '../../../core/widgets/avatar_iniciais.dart';
 import '../data/clientes_repository.dart';
 import '../domain/cliente_resumo.dart';
@@ -36,14 +38,6 @@ class _ClientesPageState extends ConsumerState<ClientesPage> {
     });
   }
 
-  void _emBreve() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('O cadastro de cliente chega na parte 8.2b.'),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final resultado = ref.watch(listaClientesProvider(_busca));
@@ -56,7 +50,7 @@ class _ClientesPageState extends ConsumerState<ClientesPage> {
             padding: const EdgeInsets.only(right: 12),
             child: IconButton.filled(
               tooltip: 'Novo cliente',
-              onPressed: _emBreve,
+              onPressed: () => context.push(Rotas.novoCliente),
               icon: const Icon(Icons.add_rounded),
             ),
           ),
@@ -90,7 +84,8 @@ class _ClientesPageState extends ConsumerState<ClientesPage> {
                           ref.refresh(listaClientesProvider(_busca).future),
                       child: _ListaClientes(
                         clientes: clientes,
-                        aoTocar: (cliente) => _emBreve(),
+                        aoTocar: (cliente) =>
+                            context.push(Rotas.cliente(cliente.id)),
                       ),
                     ),
             ),

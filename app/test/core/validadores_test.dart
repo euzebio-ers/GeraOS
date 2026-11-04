@@ -63,4 +63,19 @@ void main() {
       expect(Validadores.nomeOrganizacao(' '), 'Informe o nome da empresa.');
     });
   });
+
+  group('Validadores de cliente', () {
+    test('telefone opcional aceita vazio e recusa número incompleto', () {
+      expect(Validadores.telefoneOpcional(''), isNull);
+      expect(Validadores.telefoneOpcional('(71) 99234-1180'), isNull);
+      expect(Validadores.telefoneOpcional('(71) 9923'), isNotNull);
+    });
+
+    test('documento aceita CPF ou CNPJ, só pela quantidade de dígitos', () {
+      expect(Validadores.documento(''), isNull);
+      expect(Validadores.documento('12345678901'), isNull);
+      expect(Validadores.documento('12345678000199'), isNull);
+      expect(Validadores.documento('123'), isNotNull);
+    });
+  });
 }

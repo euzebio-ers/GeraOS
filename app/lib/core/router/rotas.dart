@@ -14,6 +14,8 @@ abstract final class Rotas {
   static const inicio = '/inicio';
   static const ordensServico = '/os';
   static const clientes = '/clientes';
+  static const novoCliente = '/clientes/novo';
+  static String cliente(String id) => '/clientes/$id';
   static const mais = '/mais';
 
   // Telas abertas por cima das abas

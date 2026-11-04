@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/formatting/telefone.dart';
 import '../../../core/supabase/supabase_provider.dart';
+import '../domain/cliente.dart';
 import '../domain/cliente_resumo.dart';
 
 class ClientesRepository {
@@ -34,6 +35,32 @@ class ClientesRepository {
     final linhas = await consulta.order('nome', ascending: true).limit(limite);
     return linhas.map(ClienteResumo.deJson).toList();
   }
+
+  /// Um cliente com todos os dados, para edição.
+  Future<Cliente> buscarPorId(String id) async {
+    final linha = await _supabase
+        .from('clientes')
+        .select('id, nome, telefone, email, documento, observacoes')
+        .eq('id', id)
+        .single();
+    return Cliente.deJson(linha);
+  }
+
+  /// Cria o cliente (se não tiver id) ou atualiza. Devolve o id.
+  Future<String> salvar(Cliente cliente) async {
+    final id = cliente.id;
+    if (id == null) {
+      final linha = await _supabase
+          .from('clientes')
+          .insert(cliente.paraJson())
+          .select('id')
+          .single();
+      return linha['id'] as String;
+    }
+
+    await _supabase.from('clientes').update(cliente.paraJson()).eq('id', id);
+    return id;
+  }
 }
 
 final clientesRepositoryProvider = Provider<ClientesRepository>(
@@ -46,3 +73,8 @@ final listaClientesProvider = FutureProvider.autoDispose
       (ref, busca) =>
           ref.watch(clientesRepositoryProvider).listar(busca: busca),
     );
+
+/// Um cliente específico, para a tela de edição.
+final clienteProvider = FutureProvider.autoDispose.family<Cliente, String>(
+  (ref, id) => ref.watch(clientesRepositoryProvider).buscarPorId(id),
+);

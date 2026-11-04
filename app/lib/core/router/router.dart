@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +7,7 @@ import '../../features/auth/presentation/cadastro_page.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/auth/presentation/nova_senha_page.dart';
 import '../../features/auth/presentation/recuperar_senha_page.dart';
+import '../../features/clientes/presentation/cliente_form_page.dart';
 import '../../features/clientes/presentation/clientes_page.dart';
 import '../../features/configuracoes/presentation/configuracoes_page.dart';
 import '../../features/inicio/presentation/inicio_page.dart';
@@ -22,7 +23,12 @@ final routerProvider = Provider<GoRouter>((ref) {
   final auth = ref.watch(estadoAutenticacaoProvider);
   final organizacao = ref.watch(estadoOrganizacaoProvider);
 
+  /// Navegador principal, acima das abas. Telas abertas nele
+  /// ocupam a tela inteira, sem a barra de abas embaixo.
+  final chaveRaiz = GlobalKey<NavigatorState>();
+
   final router = GoRouter(
+    navigatorKey: chaveRaiz,
     initialLocation: Rotas.paginaInicial,
     refreshListenable: Listenable.merge([auth, organizacao]),
     redirect: (context, state) {
@@ -109,6 +115,20 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Rotas.clientes,
                 builder: (context, state) => const ClientesPage(),
+                routes: [
+                  // "novo" vem antes de ":id", senão seria lido como um id.
+                  GoRoute(
+                    path: 'novo',
+                    parentNavigatorKey: chaveRaiz,
+                    builder: (context, state) => const ClienteFormPage(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    parentNavigatorKey: chaveRaiz,
+                    builder: (context, state) =>
+                        ClienteFormPage(clienteId: state.pathParameters['id']),
+                  ),
+                ],
               ),
             ],
           ),

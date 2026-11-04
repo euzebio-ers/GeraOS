@@ -12,6 +12,7 @@ import 'package:geraos/features/organizacao/domain/membro_atual.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geraos/features/clientes/data/clientes_repository.dart';
 import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
+import 'package:geraos/features/clientes/domain/cliente.dart';
 
 /// Versão falsa do estado de login, controlada pelo próprio teste.
 class EstadoAutenticacaoFalso extends EstadoAutenticacao {
@@ -150,12 +151,32 @@ class ClientesRepositoryFalso implements ClientesRepository {
 
   final List<ClienteResumo> clientes;
 
+  /// O último cliente enviado para `salvar`.
+  Cliente? salvo;
+
   @override
   Future<List<ClienteResumo>> listar({String busca = ''}) async {
     final termo = busca.toLowerCase();
     return clientes
         .where((cliente) => cliente.nome.toLowerCase().contains(termo))
         .toList();
+  }
+
+  @override
+  Future<Cliente> buscarPorId(String id) async {
+    final resumo = clientes.firstWhere((cliente) => cliente.id == id);
+    return Cliente(
+      id: resumo.id,
+      nome: resumo.nome,
+      telefone: resumo.telefone,
+      email: resumo.email,
+    );
+  }
+
+  @override
+  Future<String> salvar(Cliente cliente) async {
+    salvo = cliente;
+    return cliente.id ?? 'id-novo';
   }
 }
 
