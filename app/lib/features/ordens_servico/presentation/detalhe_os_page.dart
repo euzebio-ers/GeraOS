@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/formatting/datas.dart';
 import '../../../core/formatting/moeda.dart';
 import '../../../core/formatting/telefone.dart';
-import '../../../core/router/rotas.dart';
 import '../../../core/widgets/avatar_iniciais.dart';
 import '../../../core/widgets/lista_formulario.dart';
 import '../../organizacao/data/estado_organizacao.dart';
@@ -15,6 +13,7 @@ import '../domain/falha_os.dart';
 import '../domain/formatos_os.dart';
 import '../domain/os_detalhe.dart';
 import '../domain/status_os.dart';
+import 'enviar_os.dart';
 import 'widgets/dialogo_item.dart';
 import 'widgets/dialogo_texto.dart';
 import 'widgets/etiqueta_status.dart';
@@ -244,7 +243,12 @@ class _Detalhe extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => context.push(Rotas.pdfOs(os.id)),
+                  onPressed: () => enviarOs(
+                    context,
+                    os: os,
+                    empresa:
+                        ref.read(membroAtualProvider)?.nomeOrganizacao ?? '',
+                  ),
                   icon: const Icon(Icons.send_outlined),
                   label: const Text('Enviar OS'),
                 ),
