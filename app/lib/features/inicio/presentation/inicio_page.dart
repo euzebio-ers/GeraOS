@@ -37,7 +37,7 @@ class InicioPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tema = Theme.of(context);
     final cores = context.cores;
-    final membro = ref.watch(estadoOrganizacaoProvider).membro;
+    final membro = ref.watch(membroAtualProvider);
     final contagem = ref.watch(contagemStatusProvider).value ?? const {};
     final primeiroNome = membro?.nome.trim().split(RegExp(r'\s+')).first;
     final saudacao = _saudacao(DateTime.now());

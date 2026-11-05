@@ -20,6 +20,7 @@ abstract final class Rotas {
   static const novaOs = '/os/nova';
   static String os(String id) => '/os/$id';
   static const novoCliente = '/clientes/novo';
+  static const dadosEmpresa = '/mais/empresa';
   static String cliente(String id) => '/clientes/$id';
 
   // Por cima das abas

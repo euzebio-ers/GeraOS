@@ -19,6 +19,7 @@ import 'package:geraos/features/ordens_servico/domain/os_resumo.dart';
 import 'package:geraos/features/ordens_servico/domain/status_os.dart';
 import 'package:geraos/features/organizacao/data/estado_organizacao.dart';
 import 'package:geraos/features/organizacao/data/organizacao_repository.dart';
+import 'package:geraos/features/organizacao/domain/dados_empresa.dart';
 import 'package:geraos/features/organizacao/domain/membro_atual.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -136,6 +137,24 @@ class OrganizacaoRepositoryFalso implements OrganizacaoRepository {
   final String? nomeOrganizacao;
 
   String? organizacaoCriada;
+
+  /// O que `buscarDadosEmpresa` devolve.
+  DadosEmpresa dadosEmpresa = const DadosEmpresa(nome: 'TecFix Assistência');
+
+  /// Os últimos dados enviados para `salvarDadosEmpresa`.
+  DadosEmpresa? dadosSalvos;
+
+  @override
+  Future<DadosEmpresa> buscarDadosEmpresa(String organizacaoId) async =>
+      dadosEmpresa;
+
+  @override
+  Future<void> salvarDadosEmpresa(
+    String organizacaoId,
+    DadosEmpresa dados,
+  ) async {
+    dadosSalvos = dados;
+  }
 
   @override
   Future<MembroAtual?> buscarMembroAtual() async => null;

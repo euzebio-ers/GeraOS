@@ -17,6 +17,7 @@ import '../../features/ordens_servico/presentation/lista_os_page.dart';
 import '../../features/ordens_servico/presentation/nova_os_page.dart';
 import '../../features/organizacao/data/estado_organizacao.dart';
 import '../../features/organizacao/presentation/configurar_organizacao_page.dart';
+import '../../features/organizacao/presentation/dados_empresa_page.dart';
 import '../../features/organizacao/presentation/preparando_page.dart';
 import '../widgets/casca_app.dart';
 import 'rotas.dart';
@@ -153,6 +154,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: Rotas.mais,
                 builder: (context, state) => const ConfiguracoesPage(),
+                routes: [
+                  GoRoute(
+                    path: 'empresa',
+                    parentNavigatorKey: chaveRaiz,
+                    builder: (context, state) => const DadosEmpresaPage(),
+                  ),
+                ],
               ),
             ],
           ),

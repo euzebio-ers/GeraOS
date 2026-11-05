@@ -2,10 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/supabase/supabase_provider.dart';
+import '../domain/dados_empresa.dart';
 import '../domain/membro_atual.dart';
 
 /// Dados informados no cadastro da conta.
 typedef DadosCadastro = ({String? nome, String? nomeOrganizacao});
+
+/// A alteração não foi aplicada: só administradores alteram a empresa.
+class SemPermissaoEmpresa implements Exception {
+  const SemPermissaoEmpresa();
+}
 
 class OrganizacaoRepository {
   OrganizacaoRepository(this._supabase);
@@ -48,6 +54,31 @@ class OrganizacaoRepository {
         'p_nome_membro': nomeMembro.trim(),
       },
     );
+  }
+
+  /// Os dados da empresa, para a tela de Ajustes e para o PDF da OS.
+  Future<DadosEmpresa> buscarDadosEmpresa(String organizacaoId) async {
+    final linha = await _supabase
+        .from('organizacoes')
+        .select('nome, documento, telefone, email, endereco, termos_garantia')
+        .eq('id', organizacaoId)
+        .single();
+    return DadosEmpresa.deJson(linha);
+  }
+
+  /// Salva os dados da empresa. Lança [SemPermissaoEmpresa] se o banco
+  /// não aplicou a alteração, o que acontece quando quem salva não é
+  /// administrador (o RLS ignora a alteração em silêncio).
+  Future<void> salvarDadosEmpresa(
+    String organizacaoId,
+    DadosEmpresa dados,
+  ) async {
+    final linhas = await _supabase
+        .from('organizacoes')
+        .update(dados.paraJson())
+        .eq('id', organizacaoId)
+        .select('id');
+    if (linhas.isEmpty) throw const SemPermissaoEmpresa();
   }
 }
 
