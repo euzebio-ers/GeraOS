@@ -15,6 +15,7 @@ import '../../features/ordens_servico/presentation/detalhe_os_page.dart';
 import '../../features/ordens_servico/presentation/gravar_os_page.dart';
 import '../../features/ordens_servico/presentation/lista_os_page.dart';
 import '../../features/ordens_servico/presentation/nova_os_page.dart';
+import '../../features/ordens_servico/presentation/pdf_os_page.dart';
 import '../../features/organizacao/data/estado_organizacao.dart';
 import '../../features/organizacao/presentation/configurar_organizacao_page.dart';
 import '../../features/organizacao/presentation/dados_empresa_page.dart';
@@ -122,6 +123,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                     parentNavigatorKey: chaveRaiz,
                     builder: (context, state) =>
                         DetalheOsPage(osId: state.pathParameters['id']!),
+                    routes: [
+                      GoRoute(
+                        path: 'pdf',
+                        parentNavigatorKey: chaveRaiz,
+                        builder: (context, state) =>
+                            PdfOsPage(osId: state.pathParameters['id']!),
+                      ),
+                    ],
                   ),
                 ],
               ),

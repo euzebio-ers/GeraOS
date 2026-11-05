@@ -26,3 +26,19 @@ String dataHoraCurta(DateTime data, {DateTime? agora}) {
   final minuto = local.minute.toString().padLeft(2, '0');
   return 'hoje $hora:$minuto';
 }
+
+/// Data completa: "04/11/2026".
+String dataCompleta(DateTime data) {
+  final local = data.toLocal();
+  final dd = local.day.toString().padLeft(2, '0');
+  final mm = local.month.toString().padLeft(2, '0');
+  return '$dd/$mm/${local.year}';
+}
+
+/// Data e hora completas: "04/11/2026 09:05".
+String dataHoraCompleta(DateTime data) {
+  final local = data.toLocal();
+  final hora = local.hour.toString().padLeft(2, '0');
+  final minuto = local.minute.toString().padLeft(2, '0');
+  return '${dataCompleta(data)} $hora:$minuto';
+}

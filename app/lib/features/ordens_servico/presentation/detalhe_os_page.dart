@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/formatting/datas.dart';
 import '../../../core/formatting/moeda.dart';
 import '../../../core/formatting/telefone.dart';
+import '../../../core/router/rotas.dart';
 import '../../../core/widgets/avatar_iniciais.dart';
 import '../../../core/widgets/lista_formulario.dart';
 import '../../organizacao/data/estado_organizacao.dart';
@@ -242,11 +244,7 @@ class _Detalhe extends ConsumerWidget {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('O envio da OS chega na próxima etapa.'),
-                    ),
-                  ),
+                  onPressed: () => context.push(Rotas.pdfOs(os.id)),
                   icon: const Icon(Icons.send_outlined),
                   label: const Text('Enviar OS'),
                 ),
