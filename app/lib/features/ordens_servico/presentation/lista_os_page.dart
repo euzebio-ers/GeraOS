@@ -9,6 +9,7 @@ import '../data/ordens_servico_repository.dart';
 import '../domain/filtro_status.dart';
 import '../domain/os_resumo.dart';
 import 'widgets/cartao_os.dart';
+import 'filtro_solicitado.dart';
 
 class ListaOsPage extends ConsumerStatefulWidget {
   const ListaOsPage({super.key});
@@ -38,6 +39,15 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
   void initState() {
     super.initState();
     _rolagem.addListener(_aoRolar);
+
+    final pedido = ref.read(filtroOsSolicitadoProvider);
+    if (pedido != null) {
+      _filtro = pedido;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => ref.read(filtroOsSolicitadoProvider.notifier).limpar(),
+      );
+    }
+
     _carregarMais();
   }
 
@@ -119,6 +129,11 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
   @override
   Widget build(BuildContext context) {
     ref.listen<int>(atualizacaoOsProvider, (anterior, atual) => _recarregar());
+    ref.listen<FiltroStatus?>(filtroOsSolicitadoProvider, (anterior, pedido) {
+      if (pedido == null) return;
+      ref.read(filtroOsSolicitadoProvider.notifier).limpar();
+      _escolherFiltro(pedido);
+    });
     final contagem = ref.watch(contagemStatusProvider).value ?? const {};
 
     return Scaffold(

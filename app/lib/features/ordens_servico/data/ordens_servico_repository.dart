@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/supabase/supabase_provider.dart';
 import '../domain/dados_item.dart';
 import '../domain/falha_os.dart';
+import '../domain/faturamento.dart';
 import '../domain/filtro_status.dart';
 import '../domain/nova_os.dart';
 import '../domain/os_detalhe.dart';
@@ -43,10 +44,12 @@ class OrdensServicoRepository {
   }
 
   /// Uma página de OS, das mais recentes para as mais antigas.
+  /// Com `limite`, a página tem esse tamanho em vez de `tamanhoPagina`.
   Future<List<OsResumo>> listar({
     FiltroStatus filtro = FiltroStatus.todas,
     String busca = '',
     int pagina = 0,
+    int? limite,
   }) async {
     var consulta = _supabase
         .from('ordens_servico_resumo')
@@ -76,11 +79,12 @@ class OrdensServicoRepository {
       }
     }
 
-    final inicio = pagina * tamanhoPagina;
+    final tamanho = limite ?? tamanhoPagina;
+    final inicio = pagina * tamanho;
     final linhas = await consulta
         .order('criado_em', ascending: false)
         .order('numero', ascending: false)
-        .range(inicio, inicio + tamanhoPagina - 1);
+        .range(inicio, inicio + tamanho - 1);
     return linhas.map(OsResumo.deJson).toList();
   }
 
@@ -92,6 +96,12 @@ class OrdensServicoRepository {
         StatusOs.doBanco(linha['status'] as String):
             (linha['quantidade'] as num).toInt(),
     };
+  }
+
+  /// Faturamento do mês atual. Só administradores (RN002).
+  Future<Faturamento> faturamentoDoMes() async {
+    final dados = await _supabase.rpc('faturamento_do_mes');
+    return Faturamento.deJson(dados as Map<String, dynamic>);
   }
 
   /// A OS completa: cliente, itens e histórico.
@@ -193,4 +203,16 @@ final detalheOsProvider = FutureProvider.autoDispose.family<OsDetalhe, String>((
 ) {
   ref.watch(atualizacaoOsProvider);
   return ref.watch(ordensServicoRepositoryProvider).buscarDetalhe(id);
+});
+
+/// As 3 OS mais recentes, para a Início.
+final ultimasOsProvider = FutureProvider.autoDispose<List<OsResumo>>((ref) {
+  ref.watch(atualizacaoOsProvider);
+  return ref.watch(ordensServicoRepositoryProvider).listar(limite: 3);
+});
+
+/// Faturamento do mês, para o administrador.
+final faturamentoProvider = FutureProvider.autoDispose<Faturamento>((ref) {
+  ref.watch(atualizacaoOsProvider);
+  return ref.watch(ordensServicoRepositoryProvider).faturamentoDoMes();
 });

@@ -11,6 +11,7 @@ import 'package:geraos/features/clientes/domain/cliente.dart';
 import 'package:geraos/features/clientes/domain/cliente_resumo.dart';
 import 'package:geraos/features/ordens_servico/data/ordens_servico_repository.dart';
 import 'package:geraos/features/ordens_servico/domain/dados_item.dart';
+import 'package:geraos/features/ordens_servico/domain/faturamento.dart';
 import 'package:geraos/features/ordens_servico/domain/filtro_status.dart';
 import 'package:geraos/features/ordens_servico/domain/nova_os.dart';
 import 'package:geraos/features/ordens_servico/domain/os_detalhe.dart';
@@ -208,6 +209,9 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   DadosItem? itemSalvo;
   String? itemRemovido;
 
+  /// O que `faturamentoDoMes` devolve (zero, se não for definido).
+  Faturamento? faturamento;
+
   @override
   Future<OsCriada> criarDigitada(NovaOs os) async {
     criada = os;
@@ -219,6 +223,7 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
     FiltroStatus filtro = FiltroStatus.todas,
     String busca = '',
     int pagina = 0,
+    int? limite,
   }) async {
     final termo = busca.toLowerCase();
     final filtradas = ordens.where((os) {
@@ -230,7 +235,7 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
       return noFiltro && naBusca;
     }).toList();
 
-    const tamanho = OrdensServicoRepository.tamanhoPagina;
+    final tamanho = limite ?? OrdensServicoRepository.tamanhoPagina;
     return filtradas.skip(pagina * tamanho).take(tamanho).toList();
   }
 
@@ -242,6 +247,11 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
     }
     return contagem;
   }
+
+  @override
+  Future<Faturamento> faturamentoDoMes() async =>
+      faturamento ??
+      Faturamento(mes: DateTime(2026, 11), total: 0, quantidade: 0);
 
   @override
   Future<OsDetalhe> buscarDetalhe(String id) async {
