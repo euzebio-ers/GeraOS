@@ -19,7 +19,7 @@ final _detalheCriado = OsDetalhe(
   cliente: const ClienteDaOs(id: 'c-novo', nome: 'Fernanda Rocha'),
 );
 
-/// Abre a Nova OS pelo botão "Digitar OS" da Início.
+/// Abre a Nova OS pelo botão "Nova OS" da Início.
 Future<OrdensServicoRepositoryFalso> abrirNovaOs(
   WidgetTester tester, {
   List<ClienteResumo> clientes = const [],
@@ -33,7 +33,7 @@ Future<OrdensServicoRepositoryFalso> abrirNovaOs(
     clientesRepository: ClientesRepositoryFalso(clientes: clientes),
     ordensServicoRepository: repositorio,
   );
-  await tester.tap(find.text('Digitar OS'));
+  await tester.tap(find.text('Nova OS'));
   await tester.pumpAndSettle();
   return repositorio;
 }

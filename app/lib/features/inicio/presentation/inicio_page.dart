@@ -82,8 +82,8 @@ class InicioPage extends ConsumerWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => context.push(Rotas.novaOs),
-                    icon: const Icon(Icons.edit_outlined),
-                    label: const Text('Digitar OS'),
+                    icon: const Icon(Icons.note_add_outlined),
+                    label: const Text('Nova OS'),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -304,7 +304,7 @@ class _UltimasOs extends ConsumerWidget {
           ),
           data: (ordens) => ordens.isEmpty
               ? Text(
-                  'Nenhuma OS ainda. Toque em "Digitar OS" ou no microfone '
+                  'Nenhuma OS ainda. Toque em "Nova OS" ou no microfone '
                   'para criar a primeira.',
                   style: tema.textTheme.bodyMedium?.copyWith(
                     color: tema.colorScheme.onSurfaceVariant,

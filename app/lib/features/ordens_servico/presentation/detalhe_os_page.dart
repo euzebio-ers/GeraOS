@@ -346,7 +346,7 @@ class _Etapas extends StatelessWidget {
                   right: i < _rotulos.length - 1 ? 6 : 0,
                 ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       height: 6,
@@ -358,15 +358,20 @@ class _Etapas extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      _rotulos[i],
-                      style: tema.textTheme.labelSmall?.copyWith(
-                        fontWeight: i <= atual
-                            ? FontWeight.w800
-                            : FontWeight.w500,
-                        color: i <= atual
-                            ? tema.colorScheme.onSurface
-                            : tema.colorScheme.onSurfaceVariant,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: Text(
+                        _rotulos[i],
+                        maxLines: 1,
+                        style: tema.textTheme.labelSmall?.copyWith(
+                          fontWeight: i <= atual
+                              ? FontWeight.w800
+                              : FontWeight.w500,
+                          color: i <= atual
+                              ? tema.colorScheme.onSurface
+                              : tema.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],
