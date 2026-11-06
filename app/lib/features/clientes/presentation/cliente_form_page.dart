@@ -112,6 +112,7 @@ class _FormularioClienteState extends ConsumerState<_FormularioCliente> {
     try {
       await ref.read(clientesRepositoryProvider).salvar(cliente);
       ref.invalidate(listaClientesProvider);
+      ref.invalidate(clienteProvider);
       mensagens.showSnackBar(
         SnackBar(
           content: Text(

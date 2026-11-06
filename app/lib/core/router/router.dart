@@ -9,6 +9,7 @@ import '../../features/auth/presentation/nova_senha_page.dart';
 import '../../features/auth/presentation/recuperar_senha_page.dart';
 import '../../features/clientes/presentation/cliente_form_page.dart';
 import '../../features/clientes/presentation/clientes_page.dart';
+import '../../features/clientes/presentation/ficha_cliente_page.dart';
 import '../../features/configuracoes/presentation/configuracoes_page.dart';
 import '../../features/inicio/presentation/inicio_page.dart';
 import '../../features/ordens_servico/presentation/detalhe_os_page.dart';
@@ -154,7 +155,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Rotas.clientes,
-                builder: (context, state) => const ClientesPage(),
+                builder: (context, state) => ClientesPage(
+                  selecionado: state.uri.queryParameters['cliente'],
+                ),
                 routes: [
                   // "novo" vem antes de ":id", senão seria lido como um id.
                   GoRoute(
@@ -165,8 +168,18 @@ final routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: ':id',
                     parentNavigatorKey: chaveRaiz,
-                    builder: (context, state) =>
-                        ClienteFormPage(clienteId: state.pathParameters['id']),
+                    builder: (context, state) => FichaClientePage(
+                      clienteId: state.pathParameters['id']!,
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'editar',
+                        parentNavigatorKey: chaveRaiz,
+                        builder: (context, state) => ClienteFormPage(
+                          clienteId: state.pathParameters['id'],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -25,6 +25,9 @@ abstract final class Rotas {
   static const novoCliente = '/clientes/novo';
   static const dadosEmpresa = '/mais/empresa';
   static String cliente(String id) => '/clientes/$id';
+  static String editarCliente(String id) => '/clientes/$id/editar';
+  static String clienteNaLista(String id) =>
+      Uri(path: clientes, queryParameters: {'cliente': id}).toString();
 
   // Por cima das abas
   static const gravarOs = '/gravar';

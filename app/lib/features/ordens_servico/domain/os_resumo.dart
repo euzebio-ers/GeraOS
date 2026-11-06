@@ -9,6 +9,7 @@ class OsResumo {
     required this.equipamento,
     required this.clienteNome,
     required this.criadoEm,
+    this.clienteId,
     this.valorTotal = 0,
     this.quantidadeItens = 0,
   });
@@ -18,6 +19,7 @@ class OsResumo {
     numero: (json['numero'] as num).toInt(),
     status: StatusOs.doBanco(json['status'] as String),
     equipamento: json['equipamento'] as String,
+    clienteId: json['cliente_id'] as String?,
     clienteNome: json['cliente_nome'] as String,
     criadoEm: DateTime.parse(json['criado_em'] as String),
     valorTotal: (json['valor_total'] as num?)?.toDouble() ?? 0,
@@ -28,6 +30,7 @@ class OsResumo {
   final int numero;
   final StatusOs status;
   final String equipamento;
+  final String? clienteId;
   final String clienteNome;
   final DateTime criadoEm;
   final double valorTotal;

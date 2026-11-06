@@ -50,12 +50,13 @@ class OrdensServicoRepository {
     String busca = '',
     int pagina = 0,
     int? limite,
+    String? clienteId,
   }) async {
     var consulta = _supabase
         .from('ordens_servico_resumo')
         .select(
           'id, numero, status, equipamento, valor_total, '
-          'quantidade_itens, cliente_nome, criado_em',
+          'quantidade_itens, cliente_id, cliente_nome, criado_em',
         );
 
     if (filtro != FiltroStatus.todas) {
@@ -63,6 +64,8 @@ class OrdensServicoRepository {
         for (final status in filtro.status) status.valorBanco,
       ]);
     }
+
+    if (clienteId != null) consulta = consulta.eq('cliente_id', clienteId);
 
     final termo = busca.trim();
     if (termo.isNotEmpty) {
@@ -216,3 +219,12 @@ final faturamentoProvider = FutureProvider.autoDispose<Faturamento>((ref) {
   ref.watch(atualizacaoOsProvider);
   return ref.watch(ordensServicoRepositoryProvider).faturamentoDoMes();
 });
+
+/// O histórico de OS de um cliente, para a ficha dele.
+final osDoClienteProvider = FutureProvider.autoDispose
+    .family<List<OsResumo>, String>((ref, clienteId) {
+      ref.watch(atualizacaoOsProvider);
+      return ref
+          .watch(ordensServicoRepositoryProvider)
+          .listar(clienteId: clienteId, limite: 50);
+    });

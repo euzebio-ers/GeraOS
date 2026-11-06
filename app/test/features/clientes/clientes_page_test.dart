@@ -159,6 +159,8 @@ void main() {
 
     await tester.tap(find.text('Marina Costa'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Editar'));
+    await tester.pumpAndSettle();
 
     expect(find.text('Editar cliente'), findsOneWidget);
     expect(find.text('(71) 99234-1180'), findsOneWidget);

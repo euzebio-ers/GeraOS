@@ -243,6 +243,7 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
     String busca = '',
     int pagina = 0,
     int? limite,
+    String? clienteId,
   }) async {
     final termo = busca.toLowerCase();
     final filtradas = ordens.where((os) {
@@ -251,7 +252,9 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
       final naBusca =
           os.clienteNome.toLowerCase().contains(termo) ||
           os.equipamento.toLowerCase().contains(termo);
-      return noFiltro && naBusca;
+      return noFiltro &&
+          naBusca &&
+          (clienteId == null || os.clienteId == clienteId);
     }).toList();
 
     final tamanho = limite ?? OrdensServicoRepository.tamanhoPagina;
