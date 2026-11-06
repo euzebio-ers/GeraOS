@@ -21,6 +21,7 @@ import '../../features/organizacao/presentation/configurar_organizacao_page.dart
 import '../../features/organizacao/presentation/dados_empresa_page.dart';
 import '../../features/organizacao/presentation/preparando_page.dart';
 import '../widgets/casca_app.dart';
+import 'destino.dart';
 import 'rotas.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -38,9 +39,21 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final local = state.matchedLocation;
       final telaPublica = Rotas.publicas.contains(local);
+      final telaDeEntrada = telaPublica || Rotas.entrada.contains(local);
+
+      // Para onde a pessoa queria ir. Nas telas de entrada, ele vem guardado
+      // no parâmetro "de"; nas outras, é o próprio endereço pedido.
+      final pedido = destinoSeguro(
+        telaDeEntrada ? state.uri.queryParameters['de'] : state.uri.toString(),
+      );
+
+      // Vai para uma tela de entrada levando o destino junto.
+      String irPara(String rota) => pedido == null
+          ? rota
+          : Uri(path: rota, queryParameters: {'de': pedido}).toString();
 
       // 1. Sem login: só as telas públicas.
-      if (!auth.logado) return telaPublica ? null : Rotas.login;
+      if (!auth.logado) return telaPublica ? null : irPara(Rotas.login);
 
       // 2. Veio pelo link de nova senha: primeiro troca a senha.
       if (auth.recuperandoSenha) {
@@ -55,11 +68,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         SituacaoOrganizacao.semOrganizacao => Rotas.configurarOrganizacao,
         SituacaoOrganizacao.pronta => null,
       };
-      if (destino != null) return local == destino ? null : destino;
+      if (destino != null) return local == destino ? null : irPara(destino);
 
-      // 4. Tudo pronto: não faz sentido ficar nas telas de entrada.
-      final telaDeEntrada = telaPublica || Rotas.entrada.contains(local);
-      return telaDeEntrada ? Rotas.paginaInicial : null;
+      // 4. Tudo pronto: das telas de entrada, segue para onde a pessoa
+      //    queria ir, ou para a página inicial.
+      return telaDeEntrada ? (pedido ?? Rotas.paginaInicial) : null;
     },
     routes: [
       GoRoute(
@@ -110,7 +123,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: Rotas.ordensServico,
-                builder: (context, state) => const ListaOsPage(),
+                builder: (context, state) =>
+                    ListaOsPage(selecionada: state.uri.queryParameters['os']),
                 routes: [
                   // "nova" vem antes de ":id", senão seria lido como um id.
                   GoRoute(

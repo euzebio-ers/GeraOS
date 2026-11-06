@@ -4,15 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/layout/larguras.dart';
 import '../../../core/router/rotas.dart';
 import '../data/ordens_servico_repository.dart';
 import '../domain/filtro_status.dart';
 import '../domain/os_resumo.dart';
-import 'widgets/cartao_os.dart';
+import 'detalhe_os_page.dart';
 import 'filtro_solicitado.dart';
+import 'widgets/cartao_os.dart';
 
 class ListaOsPage extends ConsumerStatefulWidget {
-  const ListaOsPage({super.key});
+  const ListaOsPage({super.key, this.selecionada});
+
+  /// Id da OS aberta ao lado da lista, em telas largas (`/os?os=<id>`).
+  final String? selecionada;
 
   @override
   ConsumerState<ListaOsPage> createState() => _ListaOsPageState();
@@ -126,6 +131,15 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
     });
   }
 
+  /// Lado a lado, a OS abre à direita; senão, em tela cheia.
+  void _abrir(OsResumo os, {required bool ladoALado}) {
+    if (ladoALado) {
+      context.go(Rotas.osNaLista(os.id));
+    } else {
+      context.push(Rotas.os(os.id));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<int>(atualizacaoOsProvider, (anterior, atual) => _recarregar());
@@ -134,6 +148,37 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
       ref.read(filtroOsSolicitadoProvider.notifier).limpar();
       _escolherFiltro(pedido);
     });
+
+    return LayoutBuilder(
+      builder: (context, limites) {
+        final ladoALado = limites.maxWidth >= Larguras.listaEDetalhe;
+        final lista = _lista(ladoALado: ladoALado);
+        if (!ladoALado) return lista;
+
+        final selecionada = widget.selecionada;
+        return Row(
+          children: [
+            SizedBox(width: Larguras.colunaLista, child: lista),
+            VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
+            Expanded(
+              child: selecionada == null
+                  ? const _NenhumaSelecionada()
+                  : DetalheOsPage(
+                      key: ValueKey(selecionada),
+                      osId: selecionada,
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _lista({required bool ladoALado}) {
     final contagem = ref.watch(contagemStatusProvider).value ?? const {};
 
     return Scaffold(
@@ -187,13 +232,13 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
             ),
           ),
           const SizedBox(height: 8),
-          Expanded(child: _conteudo()),
+          Expanded(child: _conteudo(ladoALado: ladoALado)),
         ],
       ),
     );
   }
 
-  Widget _conteudo() {
+  Widget _conteudo({required bool ladoALado}) {
     if (_itens.isEmpty) {
       if (_carregando) return const Center(child: CircularProgressIndicator());
       if (_falhou) {
@@ -212,13 +257,17 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
       child: ListView.separated(
         controller: _rolagem,
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 4, 20, 120),
+        padding: EdgeInsets.fromLTRB(20, 4, 20, ladoALado ? 24 : 120),
         itemCount: _itens.length + 1,
         separatorBuilder: (context, indice) => const SizedBox(height: 10),
         itemBuilder: (context, indice) {
           if (indice == _itens.length) return _rodape();
           final os = _itens[indice];
-          return CartaoOs(os: os, aoTocar: () => context.push(Rotas.os(os.id)));
+          return CartaoOs(
+            os: os,
+            selecionado: ladoALado && os.id == widget.selecionada,
+            aoTocar: () => _abrir(os, ladoALado: ladoALado),
+          );
         },
       ),
     );
@@ -239,6 +288,35 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
       );
     }
     return const SizedBox.shrink();
+  }
+}
+
+/// O lado direito, quando nenhuma OS foi escolhida ainda.
+class _NenhumaSelecionada extends StatelessWidget {
+  const _NenhumaSelecionada();
+
+  @override
+  Widget build(BuildContext context) {
+    final tema = Theme.of(context);
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.assignment_outlined,
+            size: 48,
+            color: tema.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Selecione uma OS para ver os detalhes',
+            style: tema.textTheme.bodyLarge?.copyWith(
+              color: tema.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

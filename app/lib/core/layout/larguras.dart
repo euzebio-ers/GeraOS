@@ -9,4 +9,11 @@ abstract final class Larguras {
 
   /// Largura máxima de leitura do conteúdo (Início, detalhe, formulários).
   static const conteudo = 720.0;
+
+  /// Largura da área de conteúdo a partir da qual uma lista e o detalhe
+  /// do item selecionado aparecem lado a lado.
+  static const listaEDetalhe = 860.0;
+
+  /// Largura da coluna da lista, quando ela divide a tela com o detalhe.
+  static const colunaLista = 380.0;
 }

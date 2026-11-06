@@ -10,6 +10,14 @@ import '../../organizacao/data/estado_organizacao.dart';
 class ConfiguracoesPage extends ConsumerWidget {
   const ConfiguracoesPage({super.key});
 
+  /// Sair da conta leva sempre ao login "limpo". Sem isso, o router
+  /// guardaria esta tela como destino, e o próximo login voltaria a ela.
+  Future<void> _sair(BuildContext context, WidgetRef ref) async {
+    final router = GoRouter.of(context);
+    await ref.read(authRepositoryProvider).sair();
+    router.go(Rotas.login);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tema = Theme.of(context);
@@ -65,7 +73,7 @@ class ConfiguracoesPage extends ConsumerWidget {
           ),
           const SizedBox(height: 32),
           OutlinedButton.icon(
-            onPressed: () => ref.read(authRepositoryProvider).sair(),
+            onPressed: () => _sair(context, ref),
             icon: const Icon(Icons.logout),
             label: const Text('Sair da conta'),
           ),

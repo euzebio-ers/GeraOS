@@ -20,6 +20,8 @@ abstract final class Rotas {
   static const novaOs = '/os/nova';
   static String os(String id) => '/os/$id';
   static String pdfOs(String id) => '/os/$id/pdf';
+  static String osNaLista(String id) =>
+      Uri(path: ordensServico, queryParameters: {'os': id}).toString();
   static const novoCliente = '/clientes/novo';
   static const dadosEmpresa = '/mais/empresa';
   static String cliente(String id) => '/clientes/$id';
