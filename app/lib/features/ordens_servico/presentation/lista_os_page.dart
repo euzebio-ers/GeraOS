@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/layout/larguras.dart';
+import '../../../core/router/busca_solicitada.dart';
 import '../../../core/router/rotas.dart';
 import '../data/ordens_servico_repository.dart';
 import '../domain/filtro_status.dart';
@@ -26,6 +27,7 @@ class ListaOsPage extends ConsumerStatefulWidget {
 class _ListaOsPageState extends ConsumerState<ListaOsPage> {
   final _rolagem = ScrollController();
   final _campoBusca = TextEditingController();
+  final _focoBusca = FocusNode();
   Timer? _espera;
 
   FiltroStatus _filtro = FiltroStatus.todas;
@@ -53,6 +55,13 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
       );
     }
 
+    if (ref.read(buscaSolicitadaProvider)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(buscaSolicitadaProvider.notifier).limpar();
+        _focoBusca.requestFocus();
+      });
+    }
+
     _carregarMais();
   }
 
@@ -61,6 +70,7 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
     _espera?.cancel();
     _rolagem.dispose();
     _campoBusca.dispose();
+    _focoBusca.dispose();
     super.dispose();
   }
 
@@ -148,6 +158,13 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
       ref.read(filtroOsSolicitadoProvider.notifier).limpar();
       _escolherFiltro(pedido);
     });
+    ref.listen<bool>(buscaSolicitadaProvider, (anterior, pedido) {
+      if (!pedido) return;
+      ref.read(buscaSolicitadaProvider.notifier).limpar();
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _focoBusca.requestFocus(),
+      );
+    });
 
     return LayoutBuilder(
       builder: (context, limites) {
@@ -201,6 +218,7 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
             child: TextField(
               controller: _campoBusca,
+              focusNode: _focoBusca,
               onChanged: _aoDigitar,
               textInputAction: TextInputAction.search,
               decoration: const InputDecoration(

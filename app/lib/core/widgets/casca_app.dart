@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../layout/larguras.dart';
 import '../router/rotas.dart';
 import '../theme/cores_geraos.dart';
+import 'atalhos_teclado.dart';
 
 /// Estrutura comum às abas. No celular, barra embaixo com o microfone no
 /// centro; em telas largas, menu lateral com o botão de gravar no topo.
@@ -31,10 +32,14 @@ class CascaApp extends StatelessWidget {
         aoEscolher: _irPara,
       );
     }
-    return _CascaTelaLarga(
-      navigationShell: navigationShell,
-      aoEscolher: _irPara,
-      expandido: largura >= Larguras.menuExpandido,
+    return AtalhosTeclado(
+      aoNovaOs: () => context.push(Rotas.novaOs),
+      aoBuscar: () => navigationShell.goBranch(1),
+      child: _CascaTelaLarga(
+        navigationShell: navigationShell,
+        aoEscolher: _irPara,
+        expandido: largura >= Larguras.menuExpandido,
+      ),
     );
   }
 }

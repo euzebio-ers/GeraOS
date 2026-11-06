@@ -16,4 +16,10 @@ abstract final class Larguras {
 
   /// Largura da coluna da lista, quando ela divide a tela com o detalhe.
   static const colunaLista = 380.0;
+
+  /// Largura da área de conteúdo a partir da qual a Início usa duas colunas.
+  static const inicioEmColunas = 1040.0;
+
+  /// Largura máxima da Início em duas colunas.
+  static const inicioLargo = 1200.0;
 }
