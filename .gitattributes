@@ -1,0 +1,21 @@
+# Fim de linha LF (padrão do Linux e do macOS) para todos os arquivos de texto,
+# inclusive para quem usa Windows. Sem isso, scripts quebram no contêiner e o
+# "dart format" acusa mudança em todos os arquivos.
+* text=auto eol=lf
+
+# Scripts do Windows continuam com o fim de linha do Windows.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Arquivos binários: nunca converter.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.jar binary
+*.keystore binary
+*.jks binary
