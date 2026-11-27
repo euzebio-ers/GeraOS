@@ -225,6 +225,7 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   String? motivo;
   String? diagnosticoSalvo;
   double? descontoSalvo;
+  double? percentualSalvo;
   DadosItem? itemSalvo;
   String? itemRemovido;
 
@@ -298,8 +299,13 @@ class OrdensServicoRepositoryFalso implements OrdensServicoRepository {
   }
 
   @override
-  Future<void> salvarDesconto(String osId, double desconto) async {
-    descontoSalvo = desconto;
+  Future<void> salvarDesconto(
+    String osId, {
+    double? valor,
+    double? percentual,
+  }) async {
+    descontoSalvo = valor;
+    percentualSalvo = percentual;
   }
 
   @override
