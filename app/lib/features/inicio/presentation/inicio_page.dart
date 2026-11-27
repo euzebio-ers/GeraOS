@@ -156,7 +156,7 @@ class _Cabecalho extends StatelessWidget {
   }
 }
 
-/// O cartão de gravar e os botões "Criar OS" e "Buscar OS".
+/// O cartão de gravar e os botões "Nova OS" e "Buscar OS".
 class _Acoes extends StatelessWidget {
   const _Acoes();
 
@@ -422,7 +422,7 @@ class _UltimasOs extends ConsumerWidget {
           ),
           data: (ordens) => ordens.isEmpty
               ? Text(
-                  'Nenhuma OS ainda. Toque em "Criar OS" ou no microfone '
+                  'Nenhuma OS ainda. Toque em "Nova OS" ou no microfone '
                   'para criar a primeira.',
                   style: tema.textTheme.bodyMedium?.copyWith(
                     color: tema.colorScheme.onSurfaceVariant,

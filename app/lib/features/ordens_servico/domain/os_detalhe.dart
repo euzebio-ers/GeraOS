@@ -96,6 +96,7 @@ class OsDetalhe {
     this.diagnostico,
     this.acessorios,
     this.desconto = 0,
+    this.descontoPercentual,
     this.valorTotal = 0,
     this.previsaoEntrega,
     this.origem = 'manual',
@@ -114,6 +115,7 @@ class OsDetalhe {
     diagnostico: json['diagnostico'] as String?,
     acessorios: json['acessorios'] as String?,
     desconto: (json['desconto'] as num?)?.toDouble() ?? 0,
+    descontoPercentual: (json['desconto_percentual'] as num?)?.toDouble(),
     valorTotal: (json['valor_total'] as num?)?.toDouble() ?? 0,
     previsaoEntrega: json['previsao_entrega'] == null
         ? null
@@ -143,6 +145,9 @@ class OsDetalhe {
   final String? diagnostico;
   final String? acessorios;
   final double desconto;
+
+  /// Desconto em porcentagem, ou `null` quando o desconto é em reais.
+  final double? descontoPercentual;
   final double valorTotal;
   final DateTime? previsaoEntrega;
 
@@ -154,4 +159,8 @@ class OsDetalhe {
   final ClienteDaOs cliente;
   final List<ItemOs> itens;
   final List<RegistroHistorico> historico;
+
+  /// Soma dos itens, antes do desconto.
+  double get subtotal =>
+      itens.fold<double>(0, (soma, item) => soma + item.total);
 }

@@ -138,11 +138,21 @@ class OrdensServicoRepository {
         .eq('id', osId),
   );
 
-  /// O total é recalculado pelo banco (RN008).
-  Future<void> salvarDesconto(String osId, double desconto) => _alterar(
+  /// Desconto em reais (`valor`) ou em porcentagem (`percentual`). Com
+  /// porcentagem, o banco calcula o valor em reais e o refaz sempre que os
+  /// itens mudam. O total é recalculado pelo banco (RN008).
+  Future<void> salvarDesconto(
+    String osId, {
+    double? valor,
+    double? percentual,
+  }) => _alterar(
     () => _supabase
         .from('ordens_servico')
-        .update({'desconto': desconto})
+        .update(
+          percentual != null
+              ? {'desconto_percentual': percentual}
+              : {'desconto': valor ?? 0, 'desconto_percentual': null},
+        )
         .eq('id', osId),
   );
 
