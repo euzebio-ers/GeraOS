@@ -607,6 +607,7 @@ class _CartaoOrcamento extends StatelessWidget {
                         ),
                       ),
                       Text(formatarMoeda(item.total)),
+                      if (editarItem != null) const _IconeEditar(),
                     ],
                   ),
                 ),
@@ -621,6 +622,7 @@ class _CartaoOrcamento extends StatelessWidget {
                     children: [
                       const Expanded(child: Text('Desconto')),
                       Text('− ${formatarMoeda(os.desconto)}'),
+                      if (aoEditarDesconto != null) const _IconeEditar(),
                     ],
                   ),
                 ),
@@ -731,6 +733,23 @@ class _Historico extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Lápis pequeno que avisa que o valor ao lado pode ser editado.
+class _IconeEditar extends StatelessWidget {
+  const _IconeEditar();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Icon(
+        Icons.edit_outlined,
+        size: 16,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }
