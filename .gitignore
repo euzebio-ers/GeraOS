@@ -9,3 +9,4 @@
 # Configuração de ambiente do app (exceto o modelo)
 app/env/*.json
 !app/env/exemplo.json
+.idea/
