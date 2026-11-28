@@ -88,7 +88,7 @@ class _DialogoItemState extends State<_DialogoItem> {
     return AlertDialog(
       title: Text(_editando ? 'Editar item' : 'Adicionar item'),
       content: SizedBox(
-        width: double.maxFinite,
+        width: 480,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(

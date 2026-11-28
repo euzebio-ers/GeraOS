@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +22,19 @@ class GeraOsApp extends ConsumerWidget {
       locale: const Locale('pt', 'BR'),
       supportedLocales: const [Locale('pt', 'BR')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      scrollBehavior: const _ComArrasteDeMouse(),
       routerConfig: ref.watch(routerProvider),
     );
   }
+}
+
+/// Deixa arrastar listas com o mouse (por padrão só o toque arrasta).
+class _ComArrasteDeMouse extends MaterialScrollBehavior {
+  const _ComArrasteDeMouse();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    ...super.dragDevices,
+    PointerDeviceKind.mouse,
+  };
 }

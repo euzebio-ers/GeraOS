@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/layout/larguras.dart';
 import '../../../core/router/busca_solicitada.dart';
 import '../../../core/router/rotas.dart';
+import '../../../core/widgets/rolagem_horizontal.dart';
 import '../data/ordens_servico_repository.dart';
 import '../domain/filtro_status.dart';
 import '../domain/os_resumo.dart';
@@ -229,8 +230,7 @@ class _ListaOsPageState extends ConsumerState<ListaOsPage> {
           ),
           SizedBox(
             height: 48,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
+            child: RolagemHorizontal(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               children: [
                 for (final filtro in FiltroStatus.values)
