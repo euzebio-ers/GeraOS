@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../ajuda/botao_ajuda.dart';
+import '../../ajuda/topicos_ajuda.dart';
 import '../../../core/formatting/moeda.dart';
 import '../../../core/formatting/telefone.dart';
 import '../../../core/router/rotas.dart';
@@ -269,6 +271,7 @@ class _NovaOsPageState extends ConsumerState<NovaOsPage> {
                     decoration: const InputDecoration(
                       labelText: 'Valor estimado (R\$)',
                       hintText: 'a orçar',
+                      suffixIcon: BotaoAjuda(TopicoAjuda.valorEstimado),
                       prefixText: 'R\$ ',
                     ),
                     keyboardType: const TextInputType.numberWithOptions(

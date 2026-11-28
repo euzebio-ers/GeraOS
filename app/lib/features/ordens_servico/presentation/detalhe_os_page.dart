@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../ajuda/botao_ajuda.dart';
+import '../../ajuda/topicos_ajuda.dart';
 import '../../../core/formatting/datas.dart';
 import '../../../core/formatting/moeda.dart';
 import '../../../core/formatting/telefone.dart';
@@ -296,6 +298,7 @@ class _Cabecalho extends StatelessWidget {
                 ),
               ),
             ),
+            const BotaoAjuda(TopicoAjuda.statusOs),
           ],
         ),
         const SizedBox(height: 16),
@@ -581,7 +584,12 @@ class _CartaoOrcamento extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _Rotulo('Orçamento'),
+            const Row(
+              children: [
+                Expanded(child: _Rotulo('Orçamento')),
+                BotaoAjuda(TopicoAjuda.orcamento),
+              ],
+            ),
             if (os.itens.isEmpty)
               Text(
                 'Ainda sem orçamento (a orçar).',
