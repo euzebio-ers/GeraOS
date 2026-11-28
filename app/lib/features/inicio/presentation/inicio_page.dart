@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../ajuda/botao_ajuda.dart';
+import '../../ajuda/topicos_ajuda.dart';
 import '../../../core/formatting/moeda.dart';
 import '../../../core/layout/larguras.dart';
 import '../../../core/router/rotas.dart';
@@ -207,7 +209,14 @@ class _Bancada extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Hoje na bancada', style: tema.textTheme.titleMedium),
+        Row(
+          children: [
+            Expanded(
+              child: Text('Hoje na bancada', style: tema.textTheme.titleMedium),
+            ),
+            const BotaoAjuda(TopicoAjuda.bancada),
+          ],
+        ),
         const SizedBox(height: 12),
         IntrinsicHeight(
           child: Row(
@@ -370,12 +379,19 @@ class _CartaoFaturamento extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Faturamento de ${_meses[faturamento.mes.month - 1]} · '
-                    'só admin',
-                    style: tema.textTheme.labelLarge?.copyWith(
-                      color: tema.colorScheme.onSurfaceVariant,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Faturamento de ${_meses[faturamento.mes.month - 1]} · '
+                          'só admin',
+                          style: tema.textTheme.labelLarge?.copyWith(
+                            color: tema.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const BotaoAjuda(TopicoAjuda.faturamento),
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(
