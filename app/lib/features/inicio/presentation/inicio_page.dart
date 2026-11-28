@@ -173,7 +173,7 @@ class _Acoes extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => context.push(Rotas.novaOs),
                 icon: const Icon(Icons.note_add_outlined),
-                label: const Text('Nova OS'),
+                label: const Text('Criar OS'),
               ),
             ),
             const SizedBox(width: 12),

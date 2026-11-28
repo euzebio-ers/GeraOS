@@ -14,6 +14,7 @@ import '../domain/formatos_os.dart';
 import '../domain/os_detalhe.dart';
 import '../domain/status_os.dart';
 import 'enviar_os.dart';
+import 'widgets/dialogo_desconto.dart';
 import 'widgets/dialogo_item.dart';
 import 'widgets/dialogo_texto.dart';
 import 'widgets/etiqueta_status.dart';
@@ -177,23 +178,22 @@ class _Detalhe extends ConsumerWidget {
   }
 
   Future<void> _editarDesconto(BuildContext context, WidgetRef ref) async {
-    final texto = await pedirTexto(
+    final desconto = await editarDesconto(
       context,
-      titulo: 'Desconto',
-      rotulo: 'Valor do desconto',
-      inicial: os.desconto > 0 ? valorParaMascara(os.desconto) : null,
-      ajuda: 'Deixe vazio para remover o desconto.',
-      prefixo: 'R\$ ',
-      teclado: TextInputType.number,
-      formatadores: [MascaraMoeda()],
+      subtotal: os.subtotal,
+      descontoAtual: os.desconto,
+      percentualAtual: os.descontoPercentual,
     );
-    if (texto == null || !context.mounted) return;
+    if (desconto == null || !context.mounted) return;
 
     await _executar(
       context,
       ref,
-      (repositorio) =>
-          repositorio.salvarDesconto(os.id, textoParaValor(texto) ?? 0),
+      (repositorio) => repositorio.salvarDesconto(
+        os.id,
+        valor: desconto.valor,
+        percentual: desconto.percentual,
+      ),
       'Desconto salvo.',
     );
   }
@@ -620,7 +620,13 @@ class _CartaoOrcamento extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
-                      const Expanded(child: Text('Desconto')),
+                      Expanded(
+                        child: Text(
+                          os.descontoPercentual == null
+                              ? 'Desconto'
+                              : 'Desconto (${formatarPercentual(os.descontoPercentual!)})',
+                        ),
+                      ),
                       Text('− ${formatarMoeda(os.desconto)}'),
                       if (aoEditarDesconto != null) const _IconeEditar(),
                     ],
