@@ -90,7 +90,7 @@ class _DialogoTextoState extends State<_DialogoTexto> {
     return AlertDialog(
       title: Text(widget.titulo),
       content: SizedBox(
-        width: double.maxFinite,
+        width: 480,
         child: Form(
           key: _formKey,
           child: TextFormField(
